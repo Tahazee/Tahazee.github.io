@@ -12,8 +12,9 @@ tabs:
   # format: <filename_without_extension>: <value>
   home: Home
   categories: Blogs
-  tags: Tags
-  archives: Archives
+  projects: Projects
+  tags: tags
+  archives: archives
   about: About
 
 # the text displayed in the search bar & search results
