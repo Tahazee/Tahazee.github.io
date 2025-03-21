@@ -89,7 +89,6 @@ In my project, I've used **LiDAR** (Light Detection and Ranging) to obtain dista
 ### Defining the LiDAR in URDF (Using Xacro)
 The LiDAR is attached to the robot's body with a **fixed joint**, meaning it stays in place and moves with the robot. The `lidar.xacro` file sets its position and connection to the robot, which is important for accurate placement in both simulations and real-world use.
 
-![LiDAR Setup](images/lidar_setup.jpg) <!-- Image placeholder -->
 
 ### Physical Appearance and Configuration
 The LiDAR's size, shape, and material are defined in the `xacro` file to make it look correct in the simulation (Gazebo). The file also includes collision properties so the LiDAR can interact with objects in the simulation. Inertial properties are set to simulate the sensor's weight and how it affects the robot’s movement.
@@ -107,7 +106,6 @@ The **depth camera** is attached to the robot's chassis using a fixed joint, mea
 ### 2. Physical Appearance and Configuration
 The camera's visual representation is defined in the `xacro` file using a **box geometry**, which represents its physical shape. The camera is visualized in the simulation with a blue material. Additionally, the camera link includes an optical joint to define its alignment and orientation in the simulation. This is important for correct sensor placement and ensuring proper data alignment during navigation.
 
-![Depth Camera Setup](images/depth_camera_setup.jpg) <!-- Image placeholder -->
 
 ### 3. Gazebo Simulation Plugin
 The file includes a **Gazebo plugin** that simulates the camera sensor and publishes depth information. The depth camera is configured to provide depth data in a specified range (from 0.1 to 100 meters). It also includes properties such as horizontal field of view (FOV), image resolution, and the near and far clipping planes. These parameters define how the camera captures the environment. In real life, the depth camera would capture actual depth data from the physical world and send it to ROS 2 for processing, similar to how it works in simulation.
