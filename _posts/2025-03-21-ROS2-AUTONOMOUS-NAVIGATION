@@ -1,0 +1,80 @@
+# Choosing a Base Robot Model for Autonomous Navigation
+
+Before diving into autonomous navigation, the first step is to define a base robot model. There are many open-source robot models available, such as TurtleBot3, Husky, and Jackal. However, for this project, I have designed a custom four-wheeled URDF-based robot tailored to my specific requirements.
+
+## 📌 Sensors Integrated in the Robot
+
+To enable perception and navigation, the robot is equipped with the following sensors:
+- **LIDAR**: Used for obstacle detection and SLAM (Simultaneous Localization and Mapping).
+- **Depth Camera**: Provides 3D depth information to improve obstacle avoidance and terrain mapping.
+- **Camera**: Captures visual data for potential object recognition or additional perception tasks.
+
+---
+
+# Understanding Kinematics: The Motion Model of the Robot
+
+One of the most critical aspects of any robot is its kinematic model, which defines how the robot moves in response to control inputs. Kinematics is governed by mathematical equations involving velocities, wheel distances, and movement constraints.
+
+For this project, I have implemented the **Differential Drive** kinematic model (sometimes referred to as skid-steering in certain contexts), which is well-suited for my robot design.
+
+---
+
+## 📌 What is Differential Drive (Skid-Steering)?
+
+Differential drive, or skid-steering, is a locomotion mechanism used in tank-like robots, rovers, and tracked vehicles. Unlike traditional steering mechanisms where wheels rotate independently, differential drive robots change direction by applying different velocities to the wheels on either side.
+
+### Equations for Differential Drive:
+
+1. **Linear Velocity**: The forward or backward motion of the robot is calculated by the average speed of the left and right wheels:
+
+   \[
+   v = R_w \cdot \frac{\omega_R + \omega_L}{2}
+   \]
+
+   Where:
+   - \( v \) = Linear velocity of the robot (m/s)
+   - \( R_w \) = Wheel radius (m)
+   - \( \omega_R \) = Angular velocity of the right wheel (rad/s)
+   - \( \omega_L \) = Angular velocity of the left wheel (rad/s)
+
+2. **Angular Velocity**: The turning motion of the robot is calculated by the difference in speed between the left and right wheels:
+
+   \[
+   \omega = R_w \cdot \frac{\omega_R - \omega_L}{W}
+   \]
+
+   Where:
+   - \( \omega \) = Angular velocity of the robot (rad/s)
+   - \( W \) = Distance between the left and right wheels (wheelbase)
+
+   - **Moving Forward**: \( \omega_R = \omega_L \) → Robot moves straight.
+   - **Turning Left**: \( \omega_R > \omega_L \) → Robot curves left.
+   - **Turning Right**: \( \omega_L > \omega_R \) → Robot curves right.
+   - **Rotating in Place**: \( \omega_R = -\omega_L \) → Robot spins without moving forward.
+
+### Turning Radius:
+
+The turning radius defines the smallest curve the robot can follow while turning instead of rotating in place, based on the speed difference between its wheels.
+
+   \[
+   R = \frac{W}{2} \cdot \left( \frac{\omega_R - \omega_L}{\omega_R + \omega_L} \right)
+   \]
+
+   Where:
+   - \( R \) = Turning radius
+   - \( W \) = Wheelbase
+   - \( \omega_R, \omega_L \) = Angular velocities of the right and left wheels
+
+#### Behavior:
+- **Smaller radius**: Larger speed difference between the wheels.
+- **Larger radius**: Smaller speed difference between the wheels.
+
+This method allows the robot to pivot in place, making it highly maneuverable, especially in rough terrain. However, due to wheel slippage and friction, skid-steering requires more power than traditional differential drive robots.
+
+---
+
+## Why Differential Drive (Skid-Steering) for This Project?
+
+- **Better maneuverability** in uneven terrain, ideal for off-road applications.
+- **Simple mechanical design** with no need for steering actuators.
+- Works well for **rovers** and robots operating in unstructured environments.
