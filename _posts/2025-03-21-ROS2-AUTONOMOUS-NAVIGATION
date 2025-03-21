@@ -78,3 +78,37 @@ This method allows the robot to pivot in place, making it highly maneuverable, e
 - **Better maneuverability** in uneven terrain, ideal for off-road applications.
 - **Simple mechanical design** with no need for steering actuators.
 - Works well for **rovers** and robots operating in unstructured environments.
+
+
+# Sensor Integration
+
+## LIDAR in Autonomous Robots
+
+In my project, I've used **LiDAR** (Light Detection and Ranging) to obtain distance measurements from the environment, which are crucial for tasks like mapping and obstacle detection. The LiDAR sensor is configured in a `lidar.xacro` file, which defines its physical properties and its relationship with other components of the robot.
+
+### Defining the LiDAR in URDF (Using Xacro)
+The LiDAR is attached to the robot's body with a **fixed joint**, meaning it stays in place and moves with the robot. The `lidar.xacro` file sets its position and connection to the robot, which is important for accurate placement in both simulations and real-world use.
+
+![LiDAR Setup](images/lidar_setup.jpg) <!-- Image placeholder -->
+
+### Physical Appearance and Configuration
+The LiDAR's size, shape, and material are defined in the `xacro` file to make it look correct in the simulation (Gazebo). The file also includes collision properties so the LiDAR can interact with objects in the simulation. Inertial properties are set to simulate the sensor's weight and how it affects the robot’s movement.
+
+### Gazebo Simulation Plugin
+The file uses a plugin to simulate the LiDAR in Gazebo, which publishes distance data as LaserScan messages on the `/scan` topic. These messages are used by **RViz** or other systems to display the LiDAR data in 3D. In the real world, the LiDAR would still send LaserScan messages to ROS 2, but it would be collecting real distance data from its surroundings instead of a simulation.
+
+---
+
+## Depth Camera Configuration in URDF (Using Xacro)
+
+### 1. Defining the Depth Camera in URDF (Using Xacro)
+The **depth camera** is attached to the robot's chassis using a fixed joint, meaning it stays in place relative to the robot's body. The position of the camera is set using the origin tag in the `camera.xacro` file, which defines its location and orientation. This ensures the camera is placed accurately in both simulation and real-world scenarios.
+
+### 2. Physical Appearance and Configuration
+The camera's visual representation is defined in the `xacro` file using a **box geometry**, which represents its physical shape. The camera is visualized in the simulation with a blue material. Additionally, the camera link includes an optical joint to define its alignment and orientation in the simulation. This is important for correct sensor placement and ensuring proper data alignment during navigation.
+
+![Depth Camera Setup](images/depth_camera_setup.jpg) <!-- Image placeholder -->
+
+### 3. Gazebo Simulation Plugin
+The file includes a **Gazebo plugin** that simulates the camera sensor and publishes depth information. The depth camera is configured to provide depth data in a specified range (from 0.1 to 100 meters). It also includes properties such as horizontal field of view (FOV), image resolution, and the near and far clipping planes. These parameters define how the camera captures the environment. In real life, the depth camera would capture actual depth data from the physical world and send it to ROS 2 for processing, similar to how it works in simulation.
+
