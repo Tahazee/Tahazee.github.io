@@ -115,3 +115,97 @@ The camera's visual representation is defined in the `xacro` file using a **box 
 ### 3. **Gazebo Simulation Plugin**
 
 The file includes a **Gazebo plugin** that simulates the camera sensor and publishes depth information. The depth camera is configured to provide depth data in a specified range (from 0.1 to 100 meters). It also includes properties such as horizontal field of view (FOV), image resolution, and the near and far clipping planes. These parameters define how the camera captures the environment. In real life, the depth camera would capture actual depth data from the physical world and send it to ROS 2 for processing, similar to how it works in simulation.
+
+# SLAM Toolbox in ROS 2: Concepts and Workflow
+
+## 🧭 ODOM (Odometry)
+
+Odometry is the method used to estimate the robot’s current **pose**—its position and orientation—relative to a known starting point, often referred to as the **odom frame**.  
+This is typically achieved through **wheel encoders** that measure how far each wheel has turned, allowing the system to infer the robot’s traveled distance and direction.
+
+> ⚠️ Odometry alone is not always accurate. Over time, drift may occur due to wheel slippage or sensor inaccuracies.
+
+---
+
+## 📡 SCAN (Lidar Scanning)
+
+The **scan** refers to laser data obtained from a **LiDAR sensor**.  
+It represents distance measurements to surrounding obstacles and is crucial for:
+
+- Obstacle detection  
+- Environment mapping  
+- Occupancy grid creation
+
+This scan data enables the robot to perceive and react to its surroundings in real-time.
+
+---
+
+## 🔄 TRANSFORM
+
+ROS uses **transforms** to relate data between different **coordinate frames**.  
+Each robot component—such as sensors, chassis (`base_link`), or actuators—has its own local frame.
+
+To unify all data into a common frame, ROS applies transformations which include:
+
+- **Translation** — Position of one frame relative to another  
+- **Rotation** — Orientation difference between two frames
+
+This ensures all sensor data is coherent and correctly aligned for processing and visualization.
+
+---
+
+## 🧩 RobotStatePublisher
+
+`RobotStatePublisher` is a ROS node that broadcasts **static transforms** between the robot’s fixed frames, such as:
+
+- `base_link`
+- `camera_link`
+- `laser_frame`
+
+These frames do not move relative to one another.  
+This node helps visualization tools (like RViz) understand the robot’s internal structure and sensor locations.
+
+---
+
+## 📡 tf_broadcaster
+
+The `tf_broadcaster` handles **dynamic transforms**, which change over time—for example, as the robot moves.  
+It broadcasts transforms like:
+
+- `odom` → `base_link`
+
+This is critical for **tracking the robot's position in real time**, and ensures that every part of the system has access to up-to-date positional data.
+
+---
+
+## ⚙️ SLAM Toolbox Workflow
+
+1. **Initialization**  
+   - The SLAM Toolbox node starts.
+   - It receives:
+     - Odometry data from the `odom` frame.
+     - Lidar scan data from the sensor.
+
+2. **Odometry Transformation**  
+   - The odometry is transformed from the `odom` frame to the `base_link` frame.
+   - This gives the robot’s current pose relative to its starting point.
+
+3. **Pose Estimation**  
+   - A `Pose2D` object is created containing:
+     - `x`, `y` position
+     - `θ` orientation (theta)
+
+4. **Scan and Pose Packaging**  
+   - Pose and scan data are merged into a `PosedScan` message.
+   - These are queued for processing.
+
+5. **Scan Integration**  
+   - An **AddScan** operation is applied to each `PosedScan` in the queue.
+   - Scans are processed from oldest to newest.
+   - The environment map is updated incrementally.
+
+---
+
+This workflow enables the robot to **build and maintain a map** of its surroundings while localizing itself within that map—an essential step for autonomous navigation using **ROS 2** and **SLAM Toolbox**.
+
+
