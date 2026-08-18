@@ -1019,20 +1019,20 @@ function init3dTechFootball() {
   let height = canvas.height = 460;
 
   const techList = [
-    { name: 'Python', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg' },
-    { name: 'PyTorch', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg' },
-    { name: 'ROS2', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ros/ros-original.svg' },
-    { name: 'OpenCV', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg' },
-    { name: 'C++', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg' },
-    { name: 'C#', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg' },
-    { name: 'JS', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
-    { name: 'TF', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg' },
-    { name: 'Docker', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg' },
-    { name: 'Linux', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg' },
-    { name: 'Git', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg' },
-    { name: 'YOLOv8', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg' },
-    { name: 'n8n', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg' },
-    { name: 'PostgreSQL', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg' }
+    { name: 'Python', short: 'PY', color: '#3776AB', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg' },
+    { name: 'PyTorch', short: 'TORCH', color: '#EE4C2C', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/pytorch/pytorch-original.svg' },
+    { name: 'ROS2', short: 'ROS', color: '#222222', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/ros/ros-original.svg' },
+    { name: 'OpenCV', short: 'CV', color: '#5C3EE8', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/opencv/opencv-original.svg' },
+    { name: 'C++', short: 'C++', color: '#00599C', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg' },
+    { name: 'C#', short: 'C#', color: '#239120', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg' },
+    { name: 'JavaScript', short: 'JS', color: '#F7DF1E', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg' },
+    { name: 'TensorFlow', short: 'TF', color: '#FF6F00', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tensorflow/tensorflow-original.svg' },
+    { name: 'Docker', short: 'DOC', color: '#2496ED', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg' },
+    { name: 'Linux', short: 'LNX', color: '#FCC624', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linux/linux-original.svg' },
+    { name: 'Git', short: 'GIT', color: '#F05032', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg' },
+    { name: 'YOLOv8', short: 'YOLO', color: '#00FFFF', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg' },
+    { name: 'n8n', short: 'N8N', color: '#FF6D5A', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg' },
+    { name: 'PostgreSQL', short: 'SQL', color: '#4169E1', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg' }
   ];
 
   const nodes = [];
@@ -1051,11 +1051,12 @@ function init3dTechFootball() {
     const z = Math.cos(phi);
 
     const img = new Image();
-    img.crossOrigin = 'anonymous';
     img.src = techList[i].icon;
 
     nodes.push({
       name: techList[i].name,
+      short: techList[i].short,
+      color: techList[i].color,
       img: img,
       x: x * radius,
       y: y * radius,
@@ -1300,13 +1301,22 @@ function init3dTechFootball() {
 
       // Render Tech Brand Logo in the Center of Football Patch
       const logoSize = patchRadius * 1.1;
-      if (n.img.complete && n.img.naturalWidth !== 0) {
-        ctx.drawImage(n.img, px - logoSize / 2, py - logoSize / 2, logoSize, logoSize);
-      } else {
-        ctx.fillStyle = n.isPentagon ? '#FFFFFF' : '#7C3AED';
-        ctx.font = '800 11px monospace';
+      let drawn = false;
+      try {
+        if (n.img && n.img.complete && n.img.naturalWidth > 0 && n.img.naturalHeight > 0) {
+          ctx.drawImage(n.img, px - logoSize / 2, py - logoSize / 2, logoSize, logoSize);
+          drawn = true;
+        }
+      } catch (e) {
+        drawn = false;
+      }
+
+      if (!drawn) {
+        ctx.fillStyle = n.isPentagon ? '#FFFFFF' : (isDark ? '#C084FC' : '#7C3AED');
+        ctx.font = '800 11px "JetBrains Mono", monospace';
         ctx.textAlign = 'center';
-        ctx.fillText(n.name.substring(0, 3), px, py + 4);
+        ctx.textBaseline = 'middle';
+        ctx.fillText(n.short || n.name.substring(0, 3), px, py);
       }
 
       // RENDER HOVER TECH NAME TOOLTIP PILL DIRECTLY ABOVE HOVERED LOGO
