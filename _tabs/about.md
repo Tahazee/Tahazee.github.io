@@ -9,7 +9,7 @@ order: 4
 *Specializing in Autonomous Systems & Computer Vision*
 
 📍 Max-Planck-Straße, Heilbronn, Germany | 📞 +49-152-15458567 | ✉️ [tahazeeshan09@gmail.com](mailto:tahazeeshan09@gmail.com)  
-🔗 [LinkedIn Profile](https://www.linkedin.com/in/taha-zeeshan) | 💻 [GitHub Profile](https://github.com/Tahazee)
+🔗 [LinkedIn Profile](https://www.linkedin.com/in/tahazeeshan12) | 💻 [GitHub Profile](https://github.com/Tahazee)
 
 ---
 

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ulurover Mars Rover — Taha Zeeshan</title>
+  <meta name="description" content="GPS-denied autonomous localization pipeline for a planetary rover — ORB-SLAM3 + EKF fusion, Top 3 at Teknofest, 250k ₺ sponsorship.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236366f1'/><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-family='Inter' font-size='13' font-weight='800' fill='white'>TZ</text></svg>">
+  <link rel="stylesheet" href="../../assets/css/portfolio.css">
+  <style>
+    .proj-nav{position:sticky;top:0;z-index:100;background:rgba(250,250,248,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+    .proj-nav-back{display:flex;align-items:center;gap:7px;font-size:.82rem;font-weight:500;color:var(--muted);transition:color .2s;}
+    .proj-nav-back:hover{color:var(--fg);}
+    .proj-nav-back svg{width:16px;height:16px;}
+    .proj-breadcrumb{font-family:var(--mono);font-size:.7rem;color:var(--subtle);display:flex;align-items:center;gap:8px;}
+    .proj-breadcrumb .cur{color:var(--fg);font-weight:600;}
+    .proj-page{max-width:1060px;margin:0 auto;padding:48px 32px 80px;display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start;}
+    .proj-header{grid-column:1/-1;margin-bottom:8px;}
+    .proj-divider{grid-column:1/-1;height:1px;background:var(--border);margin:4px 0;}
+    .proj-main,.proj-sidebar{display:flex;flex-direction:column;gap:18px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);}
+    .card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);}
+    .card-title{font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--subtle);text-transform:uppercase;letter-spacing:.14em;}
+    .card-body{padding:20px;}
+    .card-body-sm{padding:14px 20px;}
+    .metric-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+    .metric-row:last-child{border-bottom:none;padding-bottom:0;}
+    .metric-row:first-child{padding-top:0;}
+    .metric-lbl{font-size:.84rem;color:var(--muted);}
+    .metric-desc{font-size:.72rem;color:var(--subtle);margin-top:1px;}
+    .metric-val{font-family:var(--mono);font-size:.96rem;font-weight:700;color:var(--fg);}
+    .pipeline{display:flex;flex-direction:column;align-items:flex-start;gap:0;}
+    .pipeline-box{padding:8px 16px;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;font-family:var(--mono);font-size:.74rem;font-weight:600;color:var(--fg);}
+    .pipeline-box.hl{background:var(--accent-dim);border-color:rgba(99,102,241,.2);color:var(--accent);}
+    .pipeline-arrow{display:flex;flex-direction:column;align-items:center;padding:3px 0;margin-left:26px;}
+    .pipeline-arrow-line{width:1px;height:12px;background:var(--border);}
+    .pipeline-arrow-head{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--subtle);}
+    .chip{font-family:var(--mono);font-size:.68rem;padding:4px 10px;border-radius:6px;background:rgba(0,0,0,.04);color:var(--muted);border:1px solid var(--border);}
+    .chip-a{background:var(--accent-dim);color:var(--accent);border-color:rgba(99,102,241,.15);}
+    .stack-wrap{display:flex;flex-wrap:wrap;gap:6px;}
+    .meta-row{display:flex;flex-direction:column;gap:2px;padding:9px 0;border-bottom:1px solid var(--border);}
+    .meta-row:last-child{border-bottom:none;padding-bottom:0;}
+    .meta-row:first-child{padding-top:0;}
+    .meta-key{font-family:var(--mono);font-size:.63rem;color:var(--subtle);text-transform:uppercase;letter-spacing:.1em;font-weight:600;}
+    .meta-val{font-size:.84rem;color:var(--fg-2);font-weight:500;}
+    .prose{font-size:.9rem;color:var(--muted);line-height:1.7;}
+    .prose strong{color:var(--fg);font-weight:600;}
+    .prose p+p{margin-top:12px;}
+    .lesson-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);font-size:.84rem;color:var(--muted);line-height:1.45;}
+    .lesson-item:last-child{border-bottom:none;}
+    .lesson-item::before{content:'→';color:var(--accent);font-weight:700;flex-shrink:0;}
+    .award-box{background:linear-gradient(135deg,rgba(234,179,8,.08),rgba(251,191,36,.04));border:1px solid rgba(234,179,8,.2);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px;}
+    .proj-cat-label{font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;}
+    .proj-status{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;}
+    .proj-status-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+    .proj-title{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-.035em;line-height:1;color:var(--fg);margin-bottom:10px;}
+    .proj-subtitle{font-size:1.05rem;color:var(--muted);line-height:1.55;max-width:640px;}
+    .proj-header-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+    @media(max-width:820px){.proj-page{grid-template-columns:1fr;}.proj-header,.proj-divider{grid-column:1;}}
+  </style>
+</head>
+<body>
+  <nav class="proj-nav">
+    <a class="proj-nav-back" href="../../index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back
+    </a>
+    <div class="proj-breadcrumb"><span>tahazeeshan</span><span>/</span><span>projects</span><span>/</span><span class="cur">ulurover</span></div>
+    <a href="https://github.com/Tahazee" target="_blank" style="display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--fg);">GitHub</a>
+  </nav>
+
+  <div class="proj-page">
+    <div class="proj-header">
+      <div class="proj-header-top">
+        <span class="proj-cat-label">Robotics · Autonomous Systems · Computer Vision</span>
+        <div class="proj-status"><span class="proj-status-dot" style="background:var(--accent)"></span>Completed</div>
+      </div>
+      <h1 class="proj-title">Ulurover</h1>
+      <p class="proj-subtitle">GPS-denied autonomous localization pipeline for a planetary rover — ORB-SLAM3 stereo visual SLAM fused with IMU via Extended Kalman Filter.</p>
+    </div>
+
+    <div style="grid-column:1/-1">
+      <div class="award-box">
+        <span style="font-size:1.8rem;">🚀</span>
+        <div>
+          <div style="font-size:.88rem;font-weight:700;color:var(--fg);">Top 3 · Teknofest National Robotics Championship</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:2px;">250,000 ₺ Corporate Sponsorship · Highest-funded technical team at the university</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proj-divider"></div>
+
+    <div class="proj-main">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Localization Performance</span><span style="font-family:var(--mono);font-size:.68rem;color:var(--subtle);">ORB-SLAM3 + EKF · ZED2 Stereo</span></div>
+        <div class="card-body">
+          <div class="metric-row"><div><div class="metric-lbl">Localization Drift</div><div class="metric-desc">Over 100m outdoor runs on unstructured terrain</div></div><div style="text-align:right"><div class="metric-val">&lt;2.5%</div></div></div>
+          <div class="metric-row"><div><div class="metric-lbl">EKF State Vector</div><div class="metric-desc">Position, velocity, orientation, bias terms</div></div><div style="text-align:right"><div class="metric-val">15-state</div></div></div>
+          <div class="metric-row"><div><div class="metric-lbl">IMU Update Rate</div><div class="metric-desc">Pre-integration for high-freq dynamics</div></div><div style="text-align:right"><div class="metric-val">100 Hz</div></div></div>
+          <div class="metric-row"><div><div class="metric-lbl">Visual SLAM Rate</div><div class="metric-desc">ORB feature tracking, 720p</div></div><div style="text-align:right"><div class="metric-val">30 Hz</div></div></div>
+          <div class="metric-row"><div><div class="metric-lbl">Team Size</div><div class="metric-desc">Cross-disciplinary: SW, EE, Mechanical</div></div><div style="text-align:right"><div class="metric-val">25+</div></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Sensor Fusion Pipeline</span></div>
+        <div class="card-body">
+          <div class="pipeline">
+            <div style="display:flex;align-items:center;"><div class="pipeline-box">ZED2 Stereo Camera · 720p @ 30Hz</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;align-items:center;"><div class="pipeline-box hl">ORB-SLAM3 · FAST Keypoints · DBoW2 Loop Closure</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;align-items:center;"><div class="pipeline-box">Visual Odometry Pose · 20 Hz</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;align-items:center;"><div class="pipeline-box hl">IMU (Pixhawk) · 100 Hz Pre-integration</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;align-items:center;"><div class="pipeline-box hl">15-State Extended Kalman Filter</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;align-items:center;"><div class="pipeline-box">Nav2 · Global Path Planning + DWB Local Planner</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Overview</span></div>
+        <div class="card-body">
+          <div class="prose">
+            <p>Led the complete <strong>autonomous perception and navigation stack</strong> for Ulurover, a Mars Rover competing in national robotics championships.</p>
+            <p>The core challenge: planetary rovers cannot rely on GPS. I built a full pipeline from stereo feature extraction through EKF sensor fusion to Nav2 path planning, while managing a 25+ engineer cross-disciplinary team. The system handles visual tracking loss events via IMU pre-integration, maintaining &lt;5% drift for up to 3 seconds of SLAM failure.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Engineering Challenges</span></div>
+        <div class="card-body">
+          <div class="lesson-item">Featureless environments (flat sand, bright sunlight) caused ORB-SLAM3 tracking loss. The EKF covariance weighting had to be dynamically adjusted during tracking failure to rely on IMU while maintaining drift bounds.</div>
+          <div class="lesson-item">IMU/camera timing synchronization — even 5ms mismatches in sensor timestamps caused measurable EKF divergence during fast rotation maneuvers.</div>
+          <div class="lesson-item">Managing 25+ engineers across SW, electrical, and mechanical sub-teams required structured sprint management and clear API contracts between sub-systems.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Key Learnings</span></div>
+        <div class="card-body">
+          <div class="lesson-item">Robust localization requires tight sensor timing synchronization. Hardware timestamping is non-negotiable for reliable EKF fusion.</div>
+          <div class="lesson-item">Field testing is irreplaceable — simulation cannot capture all real-world failure modes, especially lighting and terrain texture variation.</div>
+          <div class="lesson-item">Cross-disciplinary team leadership requires understanding every sub-system well enough to define correct interface boundaries and detect integration risks early.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proj-sidebar">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Project Info</span></div>
+        <div class="card-body-sm">
+          <div class="meta-row"><div class="meta-key">Role</div><div class="meta-val">Team Leader & Autonomous Systems Engineer</div></div>
+          <div class="meta-row"><div class="meta-key">Organisation</div><div class="meta-val">Ulurover · Bursa, Turkey</div></div>
+          <div class="meta-row"><div class="meta-key">Timeline</div><div class="meta-val">Sept 2023 – Jan 2025</div></div>
+          <div class="meta-row"><div class="meta-key">Status</div><div class="meta-val" style="color:var(--accent);font-weight:700;">● Completed</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Hardware</span></div>
+        <div class="card-body-sm">
+          <div class="meta-row"><div class="meta-key">Stereo Vision</div><div class="meta-val">ZED2 Stereo Camera</div></div>
+          <div class="meta-row"><div class="meta-key">IMU / FC</div><div class="meta-val">Pixhawk 6C</div></div>
+          <div class="meta-row"><div class="meta-key">Compute</div><div class="meta-val">Jetson + ROS2</div></div>
+          <div class="meta-row"><div class="meta-key">Terrain</div><div class="meta-val">Unstructured outdoor fields</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Tech Stack</span></div>
+        <div class="card-body-sm">
+          <div class="stack-wrap">
+            <span class="chip chip-a">ROS2</span><span class="chip chip-a">ORB-SLAM3</span><span class="chip chip-a">EKF</span>
+            <span class="chip">C++</span><span class="chip">Python</span><span class="chip">Nav2</span>
+            <span class="chip">TF2</span><span class="chip">Gazebo</span><span class="chip">MAVROS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

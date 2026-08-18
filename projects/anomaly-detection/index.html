@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anomaly Detection AE — Taha Zeeshan</title>
+  <meta name="description" content="Unsupervised industrial defect detection using convolutional autoencoders. AUROC 0.923 on MVTec AD, +8.4% localization improvement with SSIM composite loss.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236366f1'/><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-family='Inter' font-size='13' font-weight='800' fill='white'>TZ</text></svg>">
+  <link rel="stylesheet" href="../../assets/css/portfolio.css">
+  <style>
+    .proj-nav{position:sticky;top:0;z-index:100;background:rgba(250,250,248,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+    .proj-nav-back{display:flex;align-items:center;gap:7px;font-size:.82rem;font-weight:500;color:var(--muted);transition:color .2s;}
+    .proj-nav-back:hover{color:var(--fg);}
+    .proj-nav-back svg{width:16px;height:16px;}
+    .proj-breadcrumb{font-family:var(--mono);font-size:.7rem;color:var(--subtle);display:flex;align-items:center;gap:8px;}
+    .proj-breadcrumb .cur{color:var(--fg);font-weight:600;}
+    .proj-page{max-width:1060px;margin:0 auto;padding:48px 32px 80px;display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start;}
+    .proj-header{grid-column:1/-1;margin-bottom:8px;}
+    .proj-divider{grid-column:1/-1;height:1px;background:var(--border);margin:4px 0;}
+    .proj-main,.proj-sidebar{display:flex;flex-direction:column;gap:18px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);}
+    .card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);}
+    .card-title{font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--subtle);text-transform:uppercase;letter-spacing:.14em;}
+    .card-body{padding:20px;}
+    .card-body-sm{padding:14px 20px;}
+    .metric-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+    .metric-row:last-child{border-bottom:none;padding-bottom:0;}
+    .metric-row:first-child{padding-top:0;}
+    .metric-lbl{font-size:.84rem;color:var(--muted);}
+    .metric-desc{font-size:.72rem;color:var(--subtle);margin-top:1px;}
+    .metric-val{font-family:var(--mono);font-size:.96rem;font-weight:700;color:var(--fg);}
+    .pipeline{display:flex;flex-direction:column;align-items:flex-start;}
+    .pipeline-box{padding:8px 16px;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;font-family:var(--mono);font-size:.74rem;font-weight:600;color:var(--fg);}
+    .pipeline-box.hl{background:var(--accent-dim);border-color:rgba(99,102,241,.2);color:var(--accent);}
+    .pipeline-arrow{display:flex;flex-direction:column;align-items:center;padding:3px 0;margin-left:26px;}
+    .pipeline-arrow-line{width:1px;height:12px;background:var(--border);}
+    .pipeline-arrow-head{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--subtle);}
+    .chip{font-family:var(--mono);font-size:.68rem;padding:4px 10px;border-radius:6px;background:rgba(0,0,0,.04);color:var(--muted);border:1px solid var(--border);}
+    .chip-a{background:var(--accent-dim);color:var(--accent);border-color:rgba(99,102,241,.15);}
+    .stack-wrap{display:flex;flex-wrap:wrap;gap:6px;}
+    .meta-row{display:flex;flex-direction:column;gap:2px;padding:9px 0;border-bottom:1px solid var(--border);}
+    .meta-row:last-child{border-bottom:none;padding-bottom:0;}
+    .meta-row:first-child{padding-top:0;}
+    .meta-key{font-family:var(--mono);font-size:.63rem;color:var(--subtle);text-transform:uppercase;letter-spacing:.1em;font-weight:600;}
+    .meta-val{font-size:.84rem;color:var(--fg-2);font-weight:500;}
+    .prose{font-size:.9rem;color:var(--muted);line-height:1.7;}
+    .prose strong{color:var(--fg);font-weight:600;}
+    .prose p+p{margin-top:12px;}
+    .lesson-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);font-size:.84rem;color:var(--muted);line-height:1.45;}
+    .lesson-item:last-child{border-bottom:none;}
+    .lesson-item::before{content:'→';color:var(--accent);font-weight:700;flex-shrink:0;}
+    .exp-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+    .exp-row:last-child{border-bottom:none;}
+    .exp-row:first-child{padding-top:0;}
+    .proj-header-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+    .proj-cat-label{font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;}
+    .proj-status{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+    .proj-title{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-.035em;line-height:1;color:var(--fg);margin-bottom:10px;}
+    .proj-subtitle{font-size:1.05rem;color:var(--muted);line-height:1.55;max-width:640px;}
+    @media(max-width:820px){.proj-page{grid-template-columns:1fr;}.proj-header,.proj-divider{grid-column:1;}}
+  </style>
+</head>
+<body>
+  <nav class="proj-nav">
+    <a class="proj-nav-back" href="../../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</a>
+    <div class="proj-breadcrumb"><span>tahazeeshan</span><span>/</span><span>projects</span><span>/</span><span class="cur">anomaly-detection</span></div>
+    <a href="https://github.com/Tahazee" target="_blank" style="display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--fg);">GitHub</a>
+  </nav>
+
+  <div class="proj-page">
+    <div class="proj-header">
+      <div class="proj-header-top">
+        <span class="proj-cat-label">AI / ML · Computer Vision · Industrial AI</span>
+        <div class="proj-status" style="color:var(--green);"><span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;"></span>Active</div>
+      </div>
+      <h1 class="proj-title">Anomaly Detection AE</h1>
+      <p class="proj-subtitle">Unsupervised industrial defect detection using convolutional autoencoders trained with composite SSIM + L2 reconstruction loss on the MVTec AD benchmark.</p>
+    </div>
+
+    <div class="proj-divider"></div>
+
+    <div class="proj-main">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Model Performance</span><span style="font-family:var(--mono);font-size:.68rem;color:var(--subtle);">MVTec AD · Leather Category</span></div>
+        <div class="card-body">
+          <div class="metric-row"><div><div class="metric-lbl">AUROC</div><div class="metric-desc">MVTec AD leather category, held-out test set</div></div><div style="text-align:right"><div class="metric-val">0.923</div></div></div>
+          <div class="metric-row"><div><div class="metric-lbl">Localization Improvement</div><div class="metric-desc">SSIM composite loss vs. pure L2, ablation study</div></div><div style="text-align:right"><div class="metric-val">+8.4%</div></div></div>
+          <div class="metric-row"><div><div class="metric-lbl">Loss Function</div><div class="metric-desc">Structural + pixel-wise composite</div></div><div style="text-align:right"><div class="metric-val">SSIM + L2</div></div></div>
+          <div class="metric-row"><div><div class="metric-lbl">Benchmark</div><div class="metric-desc">Widely-used industrial anomaly detection dataset</div></div><div style="text-align:right"><div class="metric-val">MVTec AD</div></div></div>
+        </div>
+      </div>
+
+      <!-- EXPERIMENTS -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Experiments</span><span style="font-family:var(--mono);font-size:.68rem;color:var(--subtle);">EXP·001</span></div>
+        <div class="card-body">
+          <div class="exp-row">
+            <div>
+              <div style="font-size:.84rem;font-weight:600;color:var(--fg);">Baseline AutoEncoder · Pure L2 Loss</div>
+              <div style="font-size:.75rem;color:var(--subtle);margin-top:2px;">Initial reconstruction model, per-pixel MSE objective</div>
+            </div>
+            <span style="font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--accent);">✓ DONE</span>
+          </div>
+          <div class="exp-row">
+            <div>
+              <div style="font-size:.84rem;font-weight:600;color:var(--fg);">SSIM Composite Loss Ablation</div>
+              <div style="font-size:.75rem;color:var(--subtle);margin-top:2px;">Compare localization quality: L2 vs SSIM+L2 vs SSIM-only</div>
+            </div>
+            <span style="font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--accent);">✓ DONE</span>
+          </div>
+          <div class="exp-row">
+            <div>
+              <div style="font-size:.84rem;font-weight:600;color:var(--fg);">Cross-Category Generalization</div>
+              <div style="font-size:.75rem;color:var(--subtle);margin-top:2px;">Transfer trained model across MVTec categories without retraining</div>
+            </div>
+            <span style="font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--green);">● ACTIVE</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Detection Pipeline</span></div>
+        <div class="card-body">
+          <div class="pipeline">
+            <div style="display:flex;"><div class="pipeline-box">Input Image · 900×900 · RGB</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;"><div class="pipeline-box">Preprocessing · Normalize · Resize</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;"><div class="pipeline-box hl">Encoder · Conv Bottleneck · Latent Space</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;"><div class="pipeline-box hl">Decoder · Reconstruction · SSIM+L2 Loss</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;"><div class="pipeline-box">Per-pixel Anomaly Score Map</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;"><div class="pipeline-box">Threshold → Defect Localization</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Overview</span></div>
+        <div class="card-body">
+          <div class="prose">
+            <p>This research project explores whether <strong>unsupervised anomaly detection models</strong> can generalize across manufacturing conditions — learning the normal data manifold from defect-free samples only.</p>
+            <p>The core insight: a well-trained autoencoder will reconstruct normal textures accurately, but fail on anomalous regions — producing <strong>high reconstruction error exactly where defects exist</strong>. SSIM loss captures structural distortions that pixel-wise L2 misses, significantly improving localization precision.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Key Learnings</span></div>
+        <div class="card-body">
+          <div class="lesson-item">Composite loss functions that capture multi-scale structure (SSIM) significantly outperform pixel-wise L2 for anomaly localization. The choice of reconstruction loss matters more than architecture.</div>
+          <div class="lesson-item">Autoencoders can reconstruct defects too well if the latent space is too large — defeating the anomaly detection objective. Bottleneck capacity is a key hyperparameter.</div>
+          <div class="lesson-item">Dataset quality dominates: MVTec AD's clean, consistent images make it easier than real production environments where lighting, scale, and texture vary.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proj-sidebar">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Project Info</span></div>
+        <div class="card-body-sm">
+          <div class="meta-row"><div class="meta-key">Role</div><div class="meta-val">ML Research Engineer</div></div>
+          <div class="meta-row"><div class="meta-key">Context</div><div class="meta-val">Independent Research</div></div>
+          <div class="meta-row"><div class="meta-key">Timeline</div><div class="meta-val">2025 – Active</div></div>
+          <div class="meta-row"><div class="meta-key">Status</div><div class="meta-val" style="color:var(--green);font-weight:700;">● Active</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Dataset</span></div>
+        <div class="card-body-sm">
+          <div class="meta-row"><div class="meta-key">Name</div><div class="meta-val">MVTec Anomaly Detection</div></div>
+          <div class="meta-row"><div class="meta-key">Resolution</div><div class="meta-val">900 × 900 RGB</div></div>
+          <div class="meta-row"><div class="meta-key">Primary Category</div><div class="meta-val">Leather</div></div>
+          <div class="meta-row"><div class="meta-key">Training Data</div><div class="meta-val">Defect-free images only</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Tech Stack</span></div>
+        <div class="card-body-sm">
+          <div class="stack-wrap">
+            <span class="chip chip-a">PyTorch</span><span class="chip chip-a">Anomalib</span>
+            <span class="chip">Python</span><span class="chip">OpenCV</span><span class="chip">SSIM</span><span class="chip">AutoEncoder</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

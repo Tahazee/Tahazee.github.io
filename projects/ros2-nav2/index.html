@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROS2 Nav2 Navigation — Taha Zeeshan</title>
+  <meta name="description" content="Full-stack autonomous navigation pipeline in ROS2 — LiDAR + depth sensor fusion, Nav2 BT-Navigator, DWB local planner, 1.5 m/s cluttered indoor navigation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/portfolio.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236366f1'/><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-family='Inter' font-size='13' font-weight='800' fill='white'>TZ</text></svg>">
+  <style>
+    .proj-nav{position:sticky;top:0;z-index:100;background:rgba(250,250,248,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+    .proj-nav-back{display:flex;align-items:center;gap:7px;font-size:.82rem;font-weight:500;color:var(--muted);}
+    .proj-nav-back:hover{color:var(--fg);}
+    .proj-nav-back svg{width:16px;height:16px;}
+    .proj-breadcrumb{font-family:var(--mono);font-size:.7rem;color:var(--subtle);display:flex;align-items:center;gap:8px;}
+    .proj-breadcrumb .cur{color:var(--fg);font-weight:600;}
+    .proj-page{max-width:1060px;margin:0 auto;padding:48px 32px 80px;display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start;}
+    .proj-header{grid-column:1/-1;margin-bottom:8px;}
+    .proj-divider{grid-column:1/-1;height:1px;background:var(--border);margin:4px 0;}
+    .proj-main,.proj-sidebar{display:flex;flex-direction:column;gap:18px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);}
+    .card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);}
+    .card-title{font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--subtle);text-transform:uppercase;letter-spacing:.14em;}
+    .card-body{padding:20px;}
+    .card-body-sm{padding:14px 20px;}
+    .metric-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+    .metric-row:last-child{border-bottom:none;padding-bottom:0;}
+    .metric-row:first-child{padding-top:0;}
+    .metric-lbl{font-size:.84rem;color:var(--muted);}
+    .metric-desc{font-size:.72rem;color:var(--subtle);margin-top:1px;}
+    .metric-val{font-family:var(--mono);font-size:.96rem;font-weight:700;color:var(--fg);}
+    .pipeline{display:flex;flex-direction:column;align-items:flex-start;}
+    .pipeline-box{padding:8px 16px;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;font-family:var(--mono);font-size:.74rem;font-weight:600;color:var(--fg);}
+    .pipeline-box.hl{background:var(--accent-dim);border-color:rgba(99,102,241,.2);color:var(--accent);}
+    .pipeline-arrow{display:flex;flex-direction:column;align-items:center;padding:3px 0;margin-left:26px;}
+    .pipeline-arrow-line{width:1px;height:12px;background:var(--border);}
+    .pipeline-arrow-head{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--subtle);}
+    .chip{font-family:var(--mono);font-size:.68rem;padding:4px 10px;border-radius:6px;background:rgba(0,0,0,.04);color:var(--muted);border:1px solid var(--border);}
+    .chip-a{background:var(--accent-dim);color:var(--accent);border-color:rgba(99,102,241,.15);}
+    .stack-wrap{display:flex;flex-wrap:wrap;gap:6px;}
+    .meta-row{display:flex;flex-direction:column;gap:2px;padding:9px 0;border-bottom:1px solid var(--border);}
+    .meta-row:last-child{border-bottom:none;padding-bottom:0;}
+    .meta-row:first-child{padding-top:0;}
+    .meta-key{font-family:var(--mono);font-size:.63rem;color:var(--subtle);text-transform:uppercase;letter-spacing:.1em;font-weight:600;}
+    .meta-val{font-size:.84rem;color:var(--fg-2);font-weight:500;}
+    .prose{font-size:.9rem;color:var(--muted);line-height:1.7;}
+    .prose strong{color:var(--fg);font-weight:600;}
+    .prose p+p{margin-top:12px;}
+    .lesson-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);font-size:.84rem;color:var(--muted);line-height:1.45;}
+    .lesson-item:last-child{border-bottom:none;}
+    .lesson-item::before{content:'→';color:var(--accent);font-weight:700;flex-shrink:0;}
+    .proj-header-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+    .proj-cat-label{font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;}
+    .proj-title{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-.035em;line-height:1;color:var(--fg);margin-bottom:10px;}
+    .proj-subtitle{font-size:1.05rem;color:var(--muted);line-height:1.55;max-width:640px;}
+    @media(max-width:820px){.proj-page{grid-template-columns:1fr;}.proj-header,.proj-divider{grid-column:1;}}
+  </style>
+</head>
+<body>
+  <nav class="proj-nav">
+    <a class="proj-nav-back" href="../../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</a>
+    <div class="proj-breadcrumb"><span>tahazeeshan</span><span>/</span><span>projects</span><span>/</span><span class="cur">ros2-nav2</span></div>
+    <a href="https://github.com/Tahazee" target="_blank" style="display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--fg);">GitHub</a>
+  </nav>
+
+  <div class="proj-page">
+    <div class="proj-header">
+      <div class="proj-header-top">
+        <span class="proj-cat-label">Robotics · ROS2 · Autonomous Navigation</span>
+        <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.06em;">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;"></span>Active
+        </div>
+      </div>
+      <h1 class="proj-title">ROS2 Nav2 Navigation</h1>
+      <p class="proj-subtitle">Full-stack autonomous navigation pipeline: LiDAR + depth fusion into layered costmaps, Nav2 BT-Navigator with DWB local planner — validated in Gazebo and hardware.</p>
+    </div>
+
+    <div class="proj-divider"></div>
+
+    <div class="proj-main">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Navigation Performance</span><span style="font-family:var(--mono);font-size:.68rem;color:var(--subtle);">Gazebo + Hardware Validated</span></div>
+        <div class="card-body">
+          <div class="metric-row"><div><div class="metric-lbl">Navigation Speed</div><div class="metric-desc">Cluttered indoor environment, dynamic obstacles</div></div><div style="text-align:right"><div class="metric-val">1.5 m/s</div></div></div>
+          <div class="metric-row"><div><div class="metric-lbl">Sensor Stack</div><div class="metric-desc">Multi-modal fusion into layered costmap</div></div><div style="text-align:right"><div class="metric-val">LiDAR + ZED2</div></div></div>
+          <div class="metric-row"><div><div class="metric-lbl">Local Planner</div><div class="metric-desc">Dynamic Window-Based, real-time obstacle avoidance</div></div><div style="text-align:right"><div class="metric-val">DWB</div></div></div>
+          <div class="metric-row"><div><div class="metric-lbl">Validation</div><div class="metric-desc">Simulation then hardware</div></div><div style="text-align:right"><div class="metric-val">Gazebo → HW</div></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Navigation Stack</span></div>
+        <div class="card-body">
+          <div class="pipeline">
+            <div style="display:flex;"><div class="pipeline-box">RPLiDAR A1 + ZED2 Depth Camera</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;"><div class="pipeline-box hl">TF2 · Dynamic Transform Trees · Sensor Fusion</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;"><div class="pipeline-box hl">3-Layer Costmap · Obstacle / Inflation / Global</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;"><div class="pipeline-box">Nav2 BT-Navigator · Global Path Planning</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;"><div class="pipeline-box">DWB Local Planner · Dynamic Obstacle Avoidance</div></div>
+            <div class="pipeline-arrow"><div class="pipeline-arrow-line"></div><div class="pipeline-arrow-head"></div></div>
+            <div style="display:flex;"><div class="pipeline-box">Robot Motion Commands · MAVROS</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Overview</span></div>
+        <div class="card-body">
+          <div class="prose">
+            <p>A complete ROS2 autonomous navigation system integrating <strong>multiple sensor modalities</strong> into a layered costmap architecture for reliable indoor mobile robot navigation.</p>
+            <p>Sensor data flows through TF2-managed coordinate frames into SLAM-generated maps. Nav2 generates global paths while DWB adapts to dynamic obstacles in real time. Validated in <strong>Gazebo Fortress simulation</strong> before hardware deployment — a rigorous test-first approach.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Key Learnings</span></div>
+        <div class="card-body">
+          <div class="lesson-item">Sensor timing synchronization between LiDAR and depth camera required careful TF2 timestamp management. Even small mismatches cause costmap inconsistencies.</div>
+          <div class="lesson-item">Behavior trees in Nav2 provide powerful composability for navigation logic but require thorough understanding of ROS2 lifecycle management to use correctly.</div>
+          <div class="lesson-item">Costmap inflation parameters needed extensive tuning for narrow corridor navigation — the balance between obstacle clearance and passable paths is environment-specific.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proj-sidebar">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Project Info</span></div>
+        <div class="card-body-sm">
+          <div class="meta-row"><div class="meta-key">Role</div><div class="meta-val">Robotics Software Architect</div></div>
+          <div class="meta-row"><div class="meta-key">Context</div><div class="meta-val">Autonomous Systems Research</div></div>
+          <div class="meta-row"><div class="meta-key">Timeline</div><div class="meta-val">2024 – Active</div></div>
+          <div class="meta-row"><div class="meta-key">Status</div><div class="meta-val" style="color:var(--green);font-weight:700;">● Active</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Tech Stack</span></div>
+        <div class="card-body-sm">
+          <div class="stack-wrap">
+            <span class="chip chip-a">ROS2</span><span class="chip chip-a">Nav2</span><span class="chip chip-a">TF2</span>
+            <span class="chip">C++</span><span class="chip">Python</span><span class="chip">Gazebo</span>
+            <span class="chip">SLAM</span><span class="chip">MAVROS</span><span class="chip">DWB</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
