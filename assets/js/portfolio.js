@@ -238,7 +238,6 @@ function renderHero() {
         <div class="interactive-chroma-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="Interactive Taha Character — Click or hover to interact">
           <div class="character-speech-bubble" id="char-speech-bubble">Hi, I'm Taha! 👋</div>
           <div class="chroma-standing-frame">
-            <div class="character-glow-bg"></div>
             <!-- Hidden native video element -->
             <video id="hero-chroma-video" src="assets/images/hero_walk_greenscreen.mp4" autoplay loop muted playsinline crossorigin="anonymous" style="display:none;"></video>
             <!-- Real-time Chroma Key Canvas rendering transparent character without green screen background -->
