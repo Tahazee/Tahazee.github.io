@@ -1148,7 +1148,7 @@ ul { list-style: none; }
   #dashboard {
     grid-template-columns: 1fr;
     padding: 8px;
-    gap: 8px;
+    gap: 12px;
   }
   #profile-sidebar {
     position: static;
@@ -1156,8 +1156,37 @@ ul { list-style: none; }
   }
   .panels-row-3,
   .panels-row-2 { grid-template-columns: 1fr; }
-  .topbar-center { display: none; }
+  .topbar-center {
+    gap: 4px;
+  }
+  .topbar-btn#btn-analytics,
+  .topbar-btn#btn-preview {
+    display: none;
+  }
+  .topbar-app-name {
+    display: none;
+  }
+  .topbar-cmd-btn kbd {
+    display: none;
+  }
+  .heatmap-container, .chart-container, .panel-card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
+
+@media (max-width: 480px) {
+  #topbar {
+    padding: 0 8px;
+  }
+  .topbar-user {
+    font-size: 0.76rem;
+  }
+  .topbar-cmd-btn {
+    padding: 4px 8px;
+  }
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

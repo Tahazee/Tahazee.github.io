@@ -79,7 +79,7 @@ function renderNav() {
       <a class="nav-link" href="#writing">Writing</a>
       <a class="nav-link" href="#about">About</a>
     </nav>
-    <div style="display:flex; align-items:center; gap:8px; pointer-events:all;">
+    <div class="nav-actions" style="display:flex; align-items:center; gap:8px; pointer-events:all;">
       <a class="nav-cv-btn" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf" title="Download CV (PDF)">
         <span>Download CV</span>
       </a>
@@ -102,10 +102,100 @@ function renderNav() {
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
+      <button id="mobile-nav-toggle" class="nav-hamburger" aria-label="Toggle Navigation Menu" aria-expanded="false">
+        <svg class="hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Drawer Overlay -->
+    <div id="mobile-nav-drawer" class="mobile-nav-drawer" aria-hidden="true">
+      <div class="mobile-nav-backdrop"></div>
+      <div class="mobile-nav-content">
+        <nav class="mobile-nav-links">
+          <a class="mobile-nav-link" href="#experience">Work</a>
+          <a class="mobile-nav-link" href="#projects">Projects</a>
+          <a class="mobile-nav-link" href="#research">Research</a>
+          <a class="mobile-nav-link" href="#writing">Writing</a>
+          <a class="mobile-nav-link" href="#about">About</a>
+          <a class="mobile-nav-link" href="#certifications">Certifications</a>
+          <a class="mobile-nav-link" href="#contact">Contact</a>
+        </nav>
+        <div class="mobile-nav-footer">
+          <a class="mobile-nav-btn mobile-cv-btn" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf">
+            <span>📄 Download CV (PDF)</span>
+          </a>
+          <a class="mobile-nav-btn mobile-dash-btn" href="dashboard.html">
+            <span>📊 Analytics Dashboard ↗</span>
+          </a>
+        </div>
+      </div>
     </div>
   `;
   initTheme();
+  initMobileNav();
 }
+
+function initMobileNav() {
+  const toggleBtn = $('#mobile-nav-toggle');
+  const drawer = $('#mobile-nav-drawer');
+  if (!toggleBtn || !drawer) return;
+
+  const backdrop = drawer.querySelector('.mobile-nav-backdrop');
+  const hamburgerIcon = toggleBtn.querySelector('.hamburger-icon');
+  const closeIcon = toggleBtn.querySelector('.close-icon');
+  const links = drawer.querySelectorAll('.mobile-nav-link');
+
+  function openDrawer() {
+    drawer.classList.add('active');
+    drawer.setAttribute('aria-hidden', 'false');
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    if (hamburgerIcon) hamburgerIcon.style.display = 'none';
+    if (closeIcon) closeIcon.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('active');
+    drawer.setAttribute('aria-hidden', 'true');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    if (hamburgerIcon) hamburgerIcon.style.display = 'block';
+    if (closeIcon) closeIcon.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    if (drawer.classList.contains('active')) {
+      closeDrawer();
+    } else {
+      openDrawer();
+    }
+  });
+
+  if (backdrop) {
+    backdrop.addEventListener('click', closeDrawer);
+  }
+
+  links.forEach(link => {
+    link.addEventListener('click', () => {
+      closeDrawer();
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer.classList.contains('active')) {
+      closeDrawer();
+    }
+  });
+}
+
 
 /* ── HERO ───────────────────────────────────────────────────── */
 function renderHero() {
@@ -1015,8 +1105,16 @@ function init3dTechFootball() {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  let width = canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : 560;
-  let height = canvas.height = 460;
+  function getCanvasBounds() {
+    const parentW = canvas.parentElement ? canvas.parentElement.clientWidth : window.innerWidth;
+    const w = Math.min(parentW, 540);
+    const h = w < 420 ? 340 : 440;
+    return { w, h };
+  }
+
+  let bounds = getCanvasBounds();
+  let width = canvas.width = bounds.w;
+  let height = canvas.height = bounds.h;
 
   const techList = [
     { name: 'Python', short: 'PY', color: '#3776AB', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg' },
@@ -1037,7 +1135,7 @@ function init3dTechFootball() {
 
   const nodes = [];
   const N = techList.length;
-  const radius = Math.min(width, height) * 0.36;
+  let radius = Math.min(width, height) * 0.36;
 
   // Fibonacci golden ratio distribution over 3D sphere
   const goldenRatio = (1 + Math.sqrt(5)) / 2;
@@ -1064,6 +1162,23 @@ function init3dTechFootball() {
       isPentagon: i % 3 === 0
     });
   }
+
+  window.addEventListener('resize', () => {
+    const b = getCanvasBounds();
+    width = canvas.width = b.w;
+    height = canvas.height = b.h;
+    const oldRadius = radius;
+    radius = Math.min(width, height) * 0.36;
+    if (oldRadius > 0) {
+      const scale = radius / oldRadius;
+      nodes.forEach(n => {
+        n.x *= scale;
+        n.y *= scale;
+        n.z *= scale;
+      });
+    }
+  }, { passive: true });
+
 
   let isDragging = false;
   let prevMouseX = 0;
