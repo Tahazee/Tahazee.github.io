@@ -377,7 +377,7 @@ function renderAbout() {
       <div class="geo-bento-row geo-top-row">
 
         <!-- Card 1: Executive Summary -->
-        <div class="geo-card geo-card-name tilt-card animate">
+        <div class="geo-card geo-card-name tilt-card animate bento-fly-top-left">
           <div class="geo-card-shine"></div>
           <div class="geo-card-inner">
             <span class="geo-eyebrow">PORTFOLIO SUMMARY</span>
@@ -394,7 +394,7 @@ function renderAbout() {
         </div>
 
         <!-- Card 2: Core Portfolio Highlights Stack -->
-        <div class="geo-card geo-card-carousel tilt-card animate ad1">
+        <div class="geo-card geo-card-carousel tilt-card animate bento-fly-top-right">
           <div class="geo-card-header">
             <span class="geo-header-lbl">CAREER & MILESTONES</span>
             <span class="geo-hover-hint">Key Accomplishments</span>
@@ -435,7 +435,7 @@ function renderAbout() {
       <div class="geo-bento-row geo-main-row">
 
         <!-- Card 3: Personal Hobbies & Creative Life -->
-        <div class="geo-card geo-card-mindset tilt-card animate ad1">
+        <div class="geo-card geo-card-mindset tilt-card animate bento-fly-left">
           <div class="geo-card-inner">
             <div class="geo-heading-group">
               <h2 class="geo-card-title">Hobbies & Creative Life</h2>
@@ -466,7 +466,7 @@ function renderAbout() {
         <div class="geo-center-col">
           
           <!-- Card 4: Personal Portrait -->
-          <div class="geo-card geo-card-team tilt-card animate ad2">
+          <div class="geo-card geo-card-team tilt-card animate bento-fly-bottom-left">
             <div class="geo-photo-overlay">
               <span class="geo-photo-tag">TAHA ZEESHAN</span>
             </div>
@@ -475,7 +475,7 @@ function renderAbout() {
           </div>
 
           <!-- Card 5: Geographic Location Radar -->
-          <div class="geo-card geo-card-location tilt-card animate ad3">
+          <div class="geo-card geo-card-location tilt-card animate bento-fly-bottom-right">
             <div class="geo-radar-line-anim"></div>
             <div class="geo-loc-content">
               <div class="geo-loc-badge">CURRENT LOCATION</div>
@@ -488,7 +488,7 @@ function renderAbout() {
         </div>
 
         <!-- Card 6: Craft & Tech Stack Summary -->
-        <div class="geo-card geo-card-craft tilt-card animate ad2">
+        <div class="geo-card geo-card-craft tilt-card animate bento-fly-right">
           <div class="geo-card-shine"></div>
           <div class="geo-card-inner">
             <div class="geo-heading-group">

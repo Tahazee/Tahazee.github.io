@@ -406,8 +406,10 @@ html[data-theme="dark"] .gradient-shimmer-word {
 
 .chroma-standing-frame {
   position: relative;
-  width: 680px;
-  height: 1025px;
+  width: 710px;
+  height: 1070px;
+  max-height: calc(100vh - 120px);
+  aspect-ratio: 710 / 1070;
   filter: none;
 }
 
@@ -3906,3 +3908,57 @@ html[data-theme="dark"] .mobile-nav-content {
   }
 }
 
+
+
+/* ── BENTO CARDS FLY-IN ASSEMBLY ANIMATION ── */
+.bento-fly-top-left {
+  opacity: 0;
+  transform: translate3d(-180px, -140px, 0) rotate(-12deg) scale(0.85);
+  transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.95s ease;
+  will-change: transform, opacity;
+}
+
+.bento-fly-top-right {
+  opacity: 0;
+  transform: translate3d(180px, -140px, 0) rotate(12deg) scale(0.85);
+  transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, opacity 0.95s ease 0.1s;
+  will-change: transform, opacity;
+}
+
+.bento-fly-left {
+  opacity: 0;
+  transform: translate3d(-200px, 0, 0) rotate(-8deg) scale(0.85);
+  transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, opacity 0.95s ease 0.15s;
+  will-change: transform, opacity;
+}
+
+.bento-fly-right {
+  opacity: 0;
+  transform: translate3d(200px, 0, 0) rotate(8deg) scale(0.85);
+  transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, opacity 0.95s ease 0.2s;
+  will-change: transform, opacity;
+}
+
+.bento-fly-bottom-left {
+  opacity: 0;
+  transform: translate3d(-180px, 140px, 0) rotate(-10deg) scale(0.85);
+  transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.25s, opacity 0.95s ease 0.25s;
+  will-change: transform, opacity;
+}
+
+.bento-fly-bottom-right {
+  opacity: 0;
+  transform: translate3d(180px, 140px, 0) rotate(10deg) scale(0.85);
+  transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.3s, opacity 0.95s ease 0.3s;
+  will-change: transform, opacity;
+}
+
+.geo-card.visible.bento-fly-top-left,
+.geo-card.visible.bento-fly-top-right,
+.geo-card.visible.bento-fly-left,
+.geo-card.visible.bento-fly-right,
+.geo-card.visible.bento-fly-bottom-left,
+.geo-card.visible.bento-fly-bottom-right {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+}
