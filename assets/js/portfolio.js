@@ -240,8 +240,8 @@ function renderHero() {
           <div class="character-speech-bubble" id="char-speech-bubble">Hi, I'm Taha! 👋</div>
           <div class="character-standing-frame">
             <div class="character-glow-bg"></div>
-            <img src="assets/images/avatar_smile.png" alt="${p.name} Character" class="char-img img-smile">
-            <img src="assets/images/avatar_wink.png" alt="${p.name} Character Winking" class="char-img img-wink">
+            <img src="assets/images/fullbody_smile.png" alt="${p.name} Character" class="char-img img-smile">
+            <img src="assets/images/fullbody_wink.png" alt="${p.name} Character Winking" class="char-img img-wink">
           </div>
         </div>
       </div>
