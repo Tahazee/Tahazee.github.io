@@ -242,6 +242,8 @@ function renderHero() {
             <video id="hero-chroma-video" src="assets/images/hero_walk_greenscreen.mp4" autoplay muted playsinline crossorigin="anonymous" style="display:none;"></video>
             <!-- Real-time Chroma Key Canvas rendering transparent character without green screen background -->
             <canvas id="hero-chroma-canvas" class="chroma-canvas"></canvas>
+            <!-- Realistic 3D floor contact shadow -->
+            <div class="character-floor-shadow"></div>
           </div>
         </div>
       </div>

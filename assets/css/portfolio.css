@@ -409,7 +409,6 @@ html[data-theme="dark"] .gradient-shimmer-word {
   width: 620px;
   height: 1025px;
   max-height: 85vh;
-  animation: float-bounce-smooth 4.2s ease-in-out infinite;
   filter: none;
 }
 
@@ -430,6 +429,22 @@ html[data-theme="dark"] .gradient-shimmer-word {
   object-fit: contain;
   z-index: 1;
   pointer-events: none;
+  filter: drop-shadow(0 24px 32px rgba(0, 0, 0, 0.65)) drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45));
+  transform-style: preserve-3d;
+}
+
+.character-floor-shadow {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 65%;
+  height: 22px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.45) 45%, transparent 75%);
+  filter: blur(8px);
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
 }
 
 .character-speech-bubble {
