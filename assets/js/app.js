@@ -788,6 +788,39 @@ function initEvents() {
   $('#btn-preview')?.addEventListener('click', () => window.open('https://tahazee.github.io', '_blank'));
 }
 
+/* ── MOBILE DASHBOARD TABS ───────────────────────────────── */
+function initMobileDashboardTabs() {
+  const tabs = $$('.dash-nav-tab');
+  if (!tabs.length) return;
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      if (target === 'overview') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (target === 'projects') {
+        const rail = $('#projects-rail');
+        if (rail) {
+          rail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else if (target === 'activity') {
+        const panel = $('#panel-chart') || $('#github-panel');
+        if (panel) {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else if (target === 'profile') {
+        const sidebar = $('#profile-sidebar');
+        if (sidebar) {
+          sidebar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+}
+
 /* ── GITHUB ASYNC UPDATE ─────────────────────────────────── */
 async function loadGitHub() {
   try {
@@ -802,11 +835,13 @@ async function loadGitHub() {
 /* ── INIT ────────────────────────────────────────────────── */
 function init() {
   const steps = [
-    ['profile sidebar', renderProfileSidebar],
-    ['main panels',     renderMainPanels],
-    ['projects rail',   renderProjectsRail],
-    ['events',          initEvents],
+    ['profile sidebar',       renderProfileSidebar],
+    ['main panels',           renderMainPanels],
+    ['projects rail',         renderProjectsRail],
+    ['events',                initEvents],
+    ['mobile dashboard tabs', initMobileDashboardTabs],
   ];
+
 
   for (const [name, fn] of steps) {
     try {
