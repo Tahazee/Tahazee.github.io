@@ -238,8 +238,8 @@ function renderHero() {
         <div class="interactive-chroma-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="Interactive Taha Character — Click or hover to interact">
           <div class="character-speech-bubble" id="char-speech-bubble">Hi, I'm Taha! 👋</div>
           <div class="chroma-standing-frame">
-            <!-- Hidden native video element -->
-            <video id="hero-chroma-video" src="assets/images/hero_walk_greenscreen.mp4" autoplay loop muted playsinline crossorigin="anonymous" style="display:none;"></video>
+            <!-- Hidden native video element (no loop attribute - holds pose on finish) -->
+            <video id="hero-chroma-video" src="assets/images/hero_walk_greenscreen.mp4" autoplay muted playsinline crossorigin="anonymous" style="display:none;"></video>
             <!-- Real-time Chroma Key Canvas rendering transparent character without green screen background -->
             <canvas id="hero-chroma-canvas" class="chroma-canvas"></canvas>
           </div>
@@ -258,7 +258,7 @@ function renderHero() {
   });
 }
 
-/* Real-Time Green Screen Chroma Key Character Logic */
+/* Real-Time Ultra-Smooth Anti-Aliased Chroma Key Character Logic */
 function initChromaKeyCharacter() {
   const card = $('#hero-interactive-character');
   const speech = $('#char-speech-bubble');
@@ -268,6 +268,7 @@ function initChromaKeyCharacter() {
 
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
+  video.loop = false; // Hold final pose when animation completes!
   video.muted = true;
   video.play().catch(() => {});
 
@@ -288,23 +289,24 @@ function initChromaKeyCharacter() {
       const data = frame.data;
       const len = data.length;
 
-      // Real-time green screen chroma key removal algorithm
+      // Ultra-smooth high-precision green screen removal & green despill
       for (let i = 0; i < len; i += 4) {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
 
-        // Green Screen detection (Key Color: BGR [157 255 130] / RGB [130 255 157])
-        if (g > 85 && g > r * 1.12 && g > b * 1.08) {
-          const maxRB = Math.max(r, b);
-          const diff = g - maxRB;
+        // Green Screen Key Color distance & difference
+        const maxRB = Math.max(r, b);
+        const gDiff = g - maxRB;
 
-          if (diff > 35) {
-            data[i + 3] = 0; // Fully transparent background
-          } else if (diff > 12) {
-            const alpha = 1.0 - (diff - 12) / 23.0;
-            data[i + 3] = Math.floor(alpha * 255);
-            data[i + 1] = maxRB; // Suppress green edge spill
+        if (gDiff > 10 && g > 75) {
+          // Smoothstep alpha matte calculation for anti-aliased 3D edges
+          const alphaVal = 1.0 - Math.min(Math.max((gDiff - 10.0) / 32.0, 0.0), 1.0);
+          data[i + 3] = Math.floor(alphaVal * 255);
+
+          // Green Spill Suppression to eliminate green outline & produce clean 3D look
+          if (g > maxRB) {
+            data[i + 1] = Math.floor(maxRB + (g - maxRB) * alphaVal);
           }
         }
       }
@@ -326,15 +328,21 @@ function initChromaKeyCharacter() {
   ];
   let quoteIndex = 0;
 
-  // Hover triggers video playback acceleration
+  function playAnimation() {
+    if (video) {
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    }
+  }
+
+  // Hover triggers animation replay & card scale
   card.addEventListener('mouseenter', () => {
     card.classList.add('is-hovered');
-    if (video) video.playbackRate = 1.25;
+    playAnimation();
   });
 
   card.addEventListener('mouseleave', () => {
     card.classList.remove('is-hovered');
-    if (video) video.playbackRate = 1.0;
     card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
   });
 
@@ -348,8 +356,9 @@ function initChromaKeyCharacter() {
     card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.03)`;
   });
 
-  // Click handler: cycle speech bubble quotes and trigger bounce animation
+  // Click handler: play animation, cycle quotes, trigger pop bounce
   card.addEventListener('click', () => {
+    playAnimation();
     quoteIndex = (quoteIndex + 1) % quotes.length;
     if (speech) {
       speech.textContent = quotes[quoteIndex];
