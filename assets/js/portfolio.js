@@ -337,10 +337,9 @@ function initChromaKeyCharacter() {
     }
   }
 
-  // Hover triggers animation replay & card scale
+  // Hover effect: add class & 3D tilt (does not restart video)
   card.addEventListener('mouseenter', () => {
     card.classList.add('is-hovered');
-    playAnimation();
   });
 
   card.addEventListener('mouseleave', () => {
