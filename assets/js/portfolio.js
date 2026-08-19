@@ -203,40 +203,176 @@ function renderHero() {
   if (!el) return;
   const p = DATA.profile;
   el.innerHTML = `
-    <div class="hero-eyebrow animate ad1">
-      <span class="hero-eyebrow-pill">
-        <span class="hero-eyebrow-dot"></span>
-        Autonomous Systems · Computer Vision · Software Engineering
-      </span>
-    </div>
-    <h1 class="hero-name animate ad2">
-      Hi, I'm <span class="text-gradient-shimmer">${p.name}</span>
-    </h1>
-    <p class="hero-statement animate ad3">
-      Software Engineer specializing in <strong>Autonomous Systems & Computer Vision</strong> — from ROS2 navigation pipelines for Mars Rovers to YOLOv8 models for real-time edge monitoring.
-    </p>
-    <div class="hero-meta animate ad4">
-      <div class="status-badge">
-        <span class="status-dot"></span>
-        ${p.statusLabel}
+    <div class="hero-layout-grid">
+      <div class="hero-text-col">
+        <div class="hero-eyebrow animate ad1">
+          <span class="hero-eyebrow-pill">
+            <span class="hero-eyebrow-dot"></span>
+            Autonomous Systems · Computer Vision · Software Engineering
+          </span>
+        </div>
+        <h1 class="hero-name animate ad2">
+          Hi, I'm <span class="text-gradient-shimmer">${p.name}</span>
+        </h1>
+        <p class="hero-statement animate ad3">
+          Software Engineer specializing in <strong>Autonomous Systems & Computer Vision</strong> — from ROS2 navigation pipelines for Mars Rovers to YOLOv8 models for real-time edge monitoring.
+        </p>
+        <div class="hero-meta animate ad4">
+          <div class="status-badge">
+            <span class="status-dot"></span>
+            ${p.statusLabel}
+          </div>
+          <div class="location-badge">📍 ${p.location}</div>
+        </div>
+        <div class="hero-actions animate ad5">
+          <a class="hero-cv-btn" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf">
+            <span>Download CV</span>
+          </a>
+          <a class="hero-contact-btn" href="#contact">
+            <span>Get in Touch</span>
+          </a>
+        </div>
       </div>
-      <div class="location-badge">📍 ${p.location}</div>
-    </div>
-    <div class="hero-actions animate ad5">
-      <a class="hero-cv-btn" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf">
-        <span>Download CV</span>
-      </a>
-      <a class="hero-contact-btn" href="#contact">
-        <span>Get in Touch</span>
-      </a>
+
+      <div class="hero-character-col animate ad2">
+        <div class="interactive-chroma-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="Interactive Taha Character — Click or hover to interact">
+          <div class="character-speech-bubble" id="char-speech-bubble">Hi, I'm Taha! 👋</div>
+          <div class="chroma-standing-frame">
+            <div class="character-glow-bg"></div>
+            <!-- Hidden native video element -->
+            <video id="hero-chroma-video" src="assets/images/hero_walk_greenscreen.mp4" autoplay loop muted playsinline crossorigin="anonymous" style="display:none;"></video>
+            <!-- Real-time Chroma Key Canvas rendering transparent character without green screen background -->
+            <canvas id="hero-chroma-canvas" class="chroma-canvas"></canvas>
+          </div>
+        </div>
+      </div>
     </div>
   `;
+
+  initChromaKeyCharacter();
 
   // Trigger hero animations
   requestAnimationFrame(() => {
     setTimeout(() => {
       $$('#hero-content .animate').forEach(e => e.classList.add('visible'));
     }, 120);
+  });
+}
+
+/* Real-Time Green Screen Chroma Key Character Logic */
+function initChromaKeyCharacter() {
+  const card = $('#hero-interactive-character');
+  const speech = $('#char-speech-bubble');
+  const video = $('#hero-chroma-video');
+  const canvas = $('#hero-chroma-canvas');
+  if (!card || !video || !canvas) return;
+
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+  video.muted = true;
+  video.play().catch(() => {});
+
+  let animFrameId = null;
+
+  function processChromaFrame() {
+    if (video.videoWidth > 0) {
+      if (canvas.width !== video.videoWidth) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+      }
+
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.drawImage(video, 0, 0, w, h);
+      const frame = ctx.getImageData(0, 0, w, h);
+      const data = frame.data;
+      const len = data.length;
+
+      // Real-time green screen chroma key removal algorithm
+      for (let i = 0; i < len; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        // Green Screen detection (Key Color: BGR [157 255 130] / RGB [130 255 157])
+        if (g > 85 && g > r * 1.12 && g > b * 1.08) {
+          const maxRB = Math.max(r, b);
+          const diff = g - maxRB;
+
+          if (diff > 35) {
+            data[i + 3] = 0; // Fully transparent background
+          } else if (diff > 12) {
+            const alpha = 1.0 - (diff - 12) / 23.0;
+            data[i + 3] = Math.floor(alpha * 255);
+            data[i + 1] = maxRB; // Suppress green edge spill
+          }
+        }
+      }
+
+      ctx.putImageData(frame, 0, 0);
+    }
+
+    animFrameId = requestAnimationFrame(processChromaFrame);
+  }
+
+  animFrameId = requestAnimationFrame(processChromaFrame);
+
+  const quotes = [
+    "Hi, I'm Taha! 👋",
+    "Welcome to my portfolio! ✨",
+    "Building Autonomous & Vision AI 🤖",
+    "ROS2 & Edge ML Engineer 🚀",
+    "Wink! 😉"
+  ];
+  let quoteIndex = 0;
+
+  // Hover triggers video playback acceleration
+  card.addEventListener('mouseenter', () => {
+    card.classList.add('is-hovered');
+    if (video) video.playbackRate = 1.25;
+  });
+
+  card.addEventListener('mouseleave', () => {
+    card.classList.remove('is-hovered');
+    if (video) video.playbackRate = 1.0;
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+  });
+
+  // Parallax 3D tilt on mouse move
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    const rotateX = (-y / rect.height) * 10;
+    const rotateY = (x / rect.width) * 10;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.03)`;
+  });
+
+  // Click handler: cycle speech bubble quotes and trigger bounce animation
+  card.addEventListener('click', () => {
+    quoteIndex = (quoteIndex + 1) % quotes.length;
+    if (speech) {
+      speech.textContent = quotes[quoteIndex];
+      speech.classList.remove('pop-anim');
+      void speech.offsetWidth;
+      speech.classList.add('pop-anim');
+    }
+
+    card.classList.remove('card-click-anim');
+    void card.offsetWidth;
+    card.classList.add('card-click-anim');
+    setTimeout(() => {
+      card.classList.remove('card-click-anim');
+    }, 450);
+  });
+
+  // Keyboard accessibility
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      card.click();
+    }
   });
 }
 
