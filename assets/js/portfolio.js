@@ -235,12 +235,25 @@ function renderHero() {
       </div>
 
       <div class="hero-character-col animate ad2">
-        <div class="interactive-video-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="Interactive Taha Character Video — Click or hover to interact">
+        <div class="interactive-character-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="Interactive Taha Avatar — Click or hover to change pose">
           <div class="character-speech-bubble" id="char-speech-bubble">Hi, I'm Taha! 👋</div>
-          <div class="video-frame-wrap">
-            <div class="video-ambient-glow"></div>
-            <video id="hero-char-video" src="assets/images/hero_character.mp4" autoplay loop muted playsinline class="hero-char-video"></video>
-            <div class="video-card-overlay"></div>
+          <div class="character-standing-frame">
+            <div class="character-glow-bg"></div>
+            <img src="assets/images/pose_welcome.png" alt="${p.name} Character Welcome" class="char-pose-img active" data-pose="welcome">
+            <img src="assets/images/pose_point.png" alt="${p.name} Character Pointing" class="char-pose-img" data-pose="point">
+            <img src="assets/images/pose_wink.png" alt="${p.name} Character Wink" class="char-pose-img" data-pose="wink">
+            <img src="assets/images/pose_thumbsup.png" alt="${p.name} Character Thumbs Up" class="char-pose-img" data-pose="thumbsup">
+            <img src="assets/images/pose_thinking.png" alt="${p.name} Character Thinking" class="char-pose-img" data-pose="thinking">
+            <img src="assets/images/pose_surprised.png" alt="${p.name} Character Surprised" class="char-pose-img" data-pose="surprised">
+            <img src="assets/images/pose_pockets.png" alt="${p.name} Character Hands in Pockets" class="char-pose-img" data-pose="pockets">
+            <img src="assets/images/pose_smirk.png" alt="${p.name} Character Smirk" class="char-pose-img" data-pose="smirk">
+          </div>
+          <div class="character-pose-pills">
+            <button class="pose-pill active" data-target="welcome" title="Welcome Pose">👋</button>
+            <button class="pose-pill" data-target="point" title="Pointing Pose">👉</button>
+            <button class="pose-pill" data-target="wink" title="Wink Pose">😉</button>
+            <button class="pose-pill" data-target="thumbsup" title="Thumbs Up">👍</button>
+            <button class="pose-pill" data-target="thinking" title="Thinking">🤔</button>
           </div>
         </div>
       </div>
@@ -257,37 +270,64 @@ function renderHero() {
   });
 }
 
-/* Interactive Character Logic (Video Control, Speech Bubble, Parallax Tilt) */
+/* Interactive Character Logic (8 Poses, Hover Wink, Click Cycle & Pill Buttons) */
 function initInteractiveCharacter() {
   const card = $('#hero-interactive-character');
   const speech = $('#char-speech-bubble');
-  const video = $('#hero-char-video');
   if (!card) return;
 
-  if (video) {
-    video.muted = true;
-    video.play().catch(() => {});
+  const poseConfigs = [
+    { id: 'welcome', quote: "Hi, I'm Taha! 👋" },
+    { id: 'point', quote: "Check out my work! 👉" },
+    { id: 'wink', quote: "Wink! 😉" },
+    { id: 'thumbsup', quote: "Let's build something cool! 👍" },
+    { id: 'thinking', quote: "Hmm... what AI model next? 🤔" },
+    { id: 'surprised', quote: "Woah! Nice click! 😲" },
+    { id: 'pockets', quote: "Cool & collected 😎" },
+    { id: 'smirk', quote: "Ready for action 😏" }
+  ];
+
+  let currentPoseIndex = 0;
+
+  function setPose(index) {
+    currentPoseIndex = (index + poseConfigs.length) % poseConfigs.length;
+    const config = poseConfigs[currentPoseIndex];
+
+    card.querySelectorAll('.char-pose-img').forEach(img => {
+      img.classList.toggle('active', img.dataset.pose === config.id);
+    });
+
+    card.querySelectorAll('.pose-pill').forEach(pill => {
+      pill.classList.toggle('active', pill.dataset.target === config.id);
+    });
+
+    if (speech) {
+      speech.textContent = config.quote;
+      speech.classList.remove('pop-anim');
+      void speech.offsetWidth;
+      speech.classList.add('pop-anim');
+    }
+
+    card.classList.remove('card-click-anim');
+    void card.offsetWidth;
+    card.classList.add('card-click-anim');
+    setTimeout(() => card.classList.remove('card-click-anim'), 400);
   }
 
-  const quotes = [
-    "Hi, I'm Taha! 👋",
-    "Welcome to my portfolio! ✨",
-    "Building Autonomous & Vision AI 🤖",
-    "ROS2 & Edge ML Engineer 🚀",
-    "Wink! 😉"
-  ];
-  let quoteIndex = 0;
-
-  // Hover triggers video playback acceleration & card glow
+  // Hover effect: switch to wink pose on hover if welcome pose
   card.addEventListener('mouseenter', () => {
     card.classList.add('is-hovered');
-    if (video) video.playbackRate = 1.25;
+    if (currentPoseIndex === 0) {
+      setPose(2); // wink pose
+    }
   });
 
   card.addEventListener('mouseleave', () => {
     card.classList.remove('is-hovered');
-    if (video) video.playbackRate = 1.0;
     card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+    if (currentPoseIndex === 2) {
+      setPose(0); // return to welcome pose
+    }
   });
 
   // Parallax 3D tilt on mouse move
@@ -300,29 +340,27 @@ function initInteractiveCharacter() {
     card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.03)`;
   });
 
-  // Click handler: cycle speech quotes and trigger pop bounce animation
-  card.addEventListener('click', () => {
-    quoteIndex = (quoteIndex + 1) % quotes.length;
-    if (speech) {
-      speech.textContent = quotes[quoteIndex];
-      speech.classList.remove('pop-anim');
-      void speech.offsetWidth;
-      speech.classList.add('pop-anim');
-    }
+  // Click card cycles poses
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.pose-pill')) return;
+    setPose(currentPoseIndex + 1);
+  });
 
-    card.classList.remove('card-click-anim');
-    void card.offsetWidth;
-    card.classList.add('card-click-anim');
-    setTimeout(() => {
-      card.classList.remove('card-click-anim');
-    }, 450);
+  // Pill buttons click handlers
+  card.querySelectorAll('.pose-pill').forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const targetPose = pill.dataset.target;
+      const index = poseConfigs.findIndex(p => p.id === targetPose);
+      if (index !== -1) setPose(index);
+    });
   });
 
   // Keyboard accessibility
   card.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      card.click();
+      setPose(currentPoseIndex + 1);
     }
   });
 }
