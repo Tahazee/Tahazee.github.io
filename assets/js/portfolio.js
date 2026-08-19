@@ -235,17 +235,19 @@ function renderHero() {
       </div>
 
       <div class="hero-character-col animate ad2">
-        <div class="interactive-chroma-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="3D Taha Character Avatar — Hover to wink">
+        <div class="interactive-chroma-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="3D Green Screen Character Video">
           <div class="chroma-standing-frame">
-            <img src="assets/images/hoodie_wave.png" alt="${p.name} 3D Character Waving" class="char-3d-img img-wave active">
-            <img src="assets/images/hoodie_wink.png" alt="${p.name} 3D Character Winking" class="char-3d-img img-wink">
+            <!-- Hidden native video element using user's uploaded green screen video -->
+            <video id="hero-chroma-video" src="assets/images/hero_walk_greenscreen.mp4" autoplay muted playsinline crossorigin="anonymous" style="display:none;"></video>
+            <!-- Real-time Chroma Key Canvas rendering transparent video character without green background -->
+            <canvas id="hero-chroma-canvas" class="chroma-canvas"></canvas>
           </div>
         </div>
       </div>
     </div>
   `;
 
-  initInteractiveCharacter();
+  initChromaKeyCharacter();
 
   // Trigger hero animations
   requestAnimationFrame(() => {
@@ -255,41 +257,69 @@ function renderHero() {
   });
 }
 
-/* Super-Smooth High-Definition 3D Character Winking Logic */
-function initInteractiveCharacter() {
+/* Real-Time Ultra-Smooth Chroma Key Character Logic */
+function initChromaKeyCharacter() {
   const card = $('#hero-interactive-character');
-  if (!card) return;
+  const video = $('#hero-chroma-video');
+  const canvas = $('#hero-chroma-canvas');
+  if (!card || !video || !canvas) return;
 
-  const imgWave = card.querySelector('.img-wave');
-  const imgWink = card.querySelector('.img-wink');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-  function showWink() {
-    if (imgWave) imgWave.classList.remove('active');
-    if (imgWink) imgWink.classList.add('active');
+  video.loop = false; // Hold final pose when video finishes!
+  video.muted = true;
+  video.play().catch(() => {});
+
+  let animFrameId = null;
+
+  function processChromaFrame() {
+    if (video.videoWidth > 0) {
+      if (canvas.width !== video.videoWidth) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+      }
+
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.drawImage(video, 0, 0, w, h);
+      const frame = ctx.getImageData(0, 0, w, h);
+      const data = frame.data;
+      const len = data.length;
+
+      // Ultra-smooth green screen chroma key removal & green despill
+      for (let i = 0; i < len; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        // Green Screen Key Color distance & difference (Key Color: BGR [157 255 130])
+        const maxRB = Math.max(r, b);
+        const gDiff = g - maxRB;
+
+        if (gDiff > 10 && g > 75) {
+          const alphaVal = 1.0 - Math.min(Math.max((gDiff - 10.0) / 32.0, 0.0), 1.0);
+          data[i + 3] = Math.floor(alphaVal * 255);
+
+          if (g > maxRB) {
+            data[i + 1] = Math.floor(maxRB + (g - maxRB) * alphaVal);
+          }
+        }
+      }
+
+      ctx.putImageData(frame, 0, 0);
+    }
+
+    animFrameId = requestAnimationFrame(processChromaFrame);
   }
 
-  function showWave() {
-    if (imgWink) imgWink.classList.remove('active');
-    if (imgWave) imgWave.classList.add('active');
-  }
+  animFrameId = requestAnimationFrame(processChromaFrame);
 
-  // Hover winks character smoothly without scaling or size change
-  card.addEventListener('mouseenter', () => {
-    card.classList.add('is-hovered');
-    showWink();
-  });
-
-  card.addEventListener('mouseleave', () => {
-    card.classList.remove('is-hovered');
-    showWave();
-  });
-
-  // Click toggles pose
+  // Click handler: replay video animation
   card.addEventListener('click', () => {
-    if (imgWave && imgWave.classList.contains('active')) {
-      showWink();
-    } else {
-      showWave();
+    if (video) {
+      video.currentTime = 0;
+      video.play().catch(() => {});
     }
   });
 
