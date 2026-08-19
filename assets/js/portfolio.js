@@ -203,48 +203,145 @@ function renderHero() {
   if (!el) return;
   const p = DATA.profile;
   el.innerHTML = `
-    <div class="hero-avatar-wrap animate">
-      <div class="hero-avatar-bg"></div>
-      <div class="hero-avatar-frame">
-        <img src="assets/images/avatar_smile.png" alt="${p.name} Smiling" class="hero-avatar-img img-smile">
-        <img src="assets/images/avatar_wink.png" alt="${p.name} Winking" class="hero-avatar-img img-wink">
+    <div class="hero-layout-grid">
+      <div class="hero-text-col">
+        <div class="hero-eyebrow animate ad1">
+          <span>Autonomous Systems</span>
+          <span class="hero-eyebrow-dot"></span>
+          <span>Computer Vision</span>
+          <span class="hero-eyebrow-dot"></span>
+          <span>Software Engineering</span>
+        </div>
+        <h1 class="hero-name animate ad2">
+          Hi, I'm <span class="text-gradient-shimmer">${p.name}</span>
+        </h1>
+        <p class="hero-statement animate ad3">
+          Software Engineer specializing in <strong>Autonomous Systems & Computer Vision</strong> — from ROS2 navigation pipelines for Mars Rovers to YOLOv8 models for real-time edge monitoring.
+        </p>
+        <div class="hero-meta animate ad4">
+          <div class="status-badge">
+            <span class="status-dot"></span>
+            ${p.statusLabel}
+          </div>
+          <div class="location-badge">📍 ${p.location}</div>
+        </div>
+        <div class="hero-actions animate ad5">
+          <a class="hero-cv-btn" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf">
+            <span>Download CV</span>
+          </a>
+          <a class="hero-contact-btn" href="#contact">
+            <span>Get in Touch</span>
+          </a>
+        </div>
       </div>
-    </div>
-    <div class="hero-eyebrow animate ad1">
-      <span>Autonomous Systems</span>
-      <span class="hero-eyebrow-dot"></span>
-      <span>Computer Vision</span>
-      <span class="hero-eyebrow-dot"></span>
-      <span>Software Engineering</span>
-    </div>
-    <h1 class="hero-name animate ad2">
-      Hi, I'm <span class="text-gradient-shimmer">${p.name}</span>
-    </h1>
-    <p class="hero-statement animate ad3">
-      Software Engineer specializing in <strong>Autonomous Systems & Computer Vision</strong> — from ROS2 navigation pipelines for Mars Rovers to YOLOv8 models for real-time edge monitoring.
-    </p>
-    <div class="hero-meta animate ad4">
-      <div class="status-badge">
-        <span class="status-dot"></span>
-        ${p.statusLabel}
+
+      <div class="hero-character-col animate ad2">
+        <div class="interactive-character" id="hero-interactive-character" role="button" tabindex="0" aria-label="Interactive Taha Avatar — Click or hover to wink">
+          <div class="character-speech-bubble" id="char-speech-bubble">Hi, I'm Taha! 👋</div>
+          <div class="character-standing-frame">
+            <div class="character-glow-bg"></div>
+            <img src="assets/images/avatar_smile.png" alt="${p.name} Character" class="char-img img-smile">
+            <img src="assets/images/avatar_wink.png" alt="${p.name} Character Winking" class="char-img img-wink">
+          </div>
+        </div>
       </div>
-      <div class="location-badge">📍 ${p.location}</div>
-    </div>
-    <div class="hero-actions animate ad5" style="display:flex; align-items:center; justify-content:center; gap:12px; margin-top:22px; flex-wrap:wrap;">
-      <a class="hero-cv-btn" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf">
-        <span>Download CV</span>
-      </a>
-      <a class="hero-contact-btn" href="#contact">
-        <span>Get in Touch</span>
-      </a>
     </div>
   `;
+
+  initInteractiveCharacter();
+
   // Trigger hero animations
   requestAnimationFrame(() => {
     setTimeout(() => {
       $$('#hero-content .animate').forEach(e => e.classList.add('visible'));
     }, 120);
   });
+}
+
+/* Interactive Character Logic (Winking, Speech Bubble, Parallax Tilt) */
+function initInteractiveCharacter() {
+  const char = $('#hero-interactive-character');
+  const speech = $('#char-speech-bubble');
+  if (!char) return;
+
+  const quotes = [
+    "Hi, I'm Taha! 👋",
+    "Welcome to my portfolio! ✨",
+    "Building Autonomous & Vision AI 🤖",
+    "ROS2 & Edge ML Engineer 🚀",
+    "Wink! 😉"
+  ];
+  let quoteIndex = 0;
+
+  // Hover triggers wink
+  char.addEventListener('mouseenter', () => {
+    char.classList.add('is-winking');
+  });
+
+  char.addEventListener('mouseleave', () => {
+    char.classList.remove('is-winking');
+    char.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+  });
+
+  // Parallax 3D tilt on mouse move
+  char.addEventListener('mousemove', (e) => {
+    const rect = char.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    const rotateX = (-y / rect.height) * 12;
+    const rotateY = (x / rect.width) * 12;
+    char.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.04)`;
+  });
+
+  // Click handler: cycle quotes and trigger bounce animation
+  char.addEventListener('click', () => {
+    char.classList.add('is-winking');
+    quoteIndex = (quoteIndex + 1) % quotes.length;
+    if (speech) {
+      speech.textContent = quotes[quoteIndex];
+      speech.classList.remove('pop-anim');
+      void speech.offsetWidth;
+      speech.classList.add('pop-anim');
+    }
+
+    const frame = char.querySelector('.character-standing-frame');
+    if (frame) {
+      frame.classList.remove('bounce-click');
+      void frame.offsetWidth;
+      frame.classList.add('bounce-click');
+      setTimeout(() => {
+        frame.classList.remove('bounce-click');
+      }, 500);
+    }
+
+    setTimeout(() => {
+      if (!char.matches(':hover')) {
+        char.classList.remove('is-winking');
+      }
+    }, 1200);
+  });
+
+  // Keyboard support
+  char.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      char.click();
+    }
+  });
+
+  // Periodic automatic idle wink every 4 seconds when idle
+  if (!window._heroIdleWinkInterval) {
+    window._heroIdleWinkInterval = setInterval(() => {
+      if (char && document.body.contains(char) && !char.matches(':hover') && !char.classList.contains('is-winking')) {
+        char.classList.add('is-winking');
+        setTimeout(() => {
+          if (!char.matches(':hover')) {
+            char.classList.remove('is-winking');
+          }
+        }, 450);
+      }
+    }, 4000);
+  }
 }
 
 /* ── ABOUT (Screen Shade Bento Grid with Portfolio Summary & Hobbies) ── */
