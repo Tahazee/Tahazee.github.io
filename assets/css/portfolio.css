@@ -432,61 +432,6 @@ html[data-theme="dark"] .gradient-shimmer-word {
   transform-style: preserve-3d;
 }
 
-.character-floor-shadow {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 65%;
-  height: 22px;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.45) 45%, transparent 75%);
-  filter: blur(8px);
-  z-index: 0;
-  pointer-events: none;
-  border-radius: 50%;
-}
-
-.character-speech-bubble {
-  position: absolute;
-  top: -46px;
-  left: 50%;
-  transform: translateX(-50%) scale(1);
-  background: var(--card);
-  border: 1px solid var(--accent);
-  color: var(--fg);
-  padding: 8px 18px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
-  pointer-events: none;
-  white-space: nowrap;
-  z-index: 10;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
-}
-
-.character-speech-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  width: 10px;
-  height: 10px;
-  background: var(--card);
-  border-right: 1px solid var(--accent);
-  border-bottom: 1px solid var(--accent);
-}
-
-.character-speech-bubble.pop-anim {
-  animation: speech-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes speech-pop {
-  0% { transform: translateX(-50%) scale(0.8); opacity: 0.5; }
-  60% { transform: translateX(-50%) scale(1.12); opacity: 1; }
-  100% { transform: translateX(-50%) scale(1); opacity: 1; }
-}
 
 .interactive-chroma-card.card-click-anim {
   animation: card-bounce 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);

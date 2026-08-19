@@ -236,14 +236,11 @@ function renderHero() {
 
       <div class="hero-character-col animate ad2">
         <div class="interactive-chroma-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="Interactive Taha Character — Click or hover to interact">
-          <div class="character-speech-bubble" id="char-speech-bubble">Hi, I'm Taha! 👋</div>
           <div class="chroma-standing-frame">
             <!-- Hidden native video element (no loop attribute - holds pose on finish) -->
             <video id="hero-chroma-video" src="assets/images/hero_walk_greenscreen.mp4" autoplay muted playsinline crossorigin="anonymous" style="display:none;"></video>
             <!-- Real-time Chroma Key Canvas rendering transparent character without green screen background -->
             <canvas id="hero-chroma-canvas" class="chroma-canvas"></canvas>
-            <!-- Realistic 3D floor contact shadow -->
-            <div class="character-floor-shadow"></div>
           </div>
         </div>
       </div>
@@ -263,7 +260,6 @@ function renderHero() {
 /* Real-Time Ultra-Smooth Anti-Aliased Chroma Key Character Logic */
 function initChromaKeyCharacter() {
   const card = $('#hero-interactive-character');
-  const speech = $('#char-speech-bubble');
   const video = $('#hero-chroma-video');
   const canvas = $('#hero-chroma-canvas');
   if (!card || !video || !canvas) return;
@@ -321,15 +317,6 @@ function initChromaKeyCharacter() {
 
   animFrameId = requestAnimationFrame(processChromaFrame);
 
-  const quotes = [
-    "Hi, I'm Taha! 👋",
-    "Welcome to my portfolio! ✨",
-    "Building Autonomous & Vision AI 🤖",
-    "ROS2 & Edge ML Engineer 🚀",
-    "Wink! 😉"
-  ];
-  let quoteIndex = 0;
-
   function playAnimation() {
     if (video) {
       video.currentTime = 0;
@@ -337,7 +324,7 @@ function initChromaKeyCharacter() {
     }
   }
 
-  // Hover effect: add class & 3D tilt (does not restart video)
+  // Hover effect: add class (does not scale or restart video)
   card.addEventListener('mouseenter', () => {
     card.classList.add('is-hovered');
   });
@@ -347,27 +334,19 @@ function initChromaKeyCharacter() {
     card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
   });
 
-  // Parallax 3D tilt on mouse move
+  // Parallax 3D tilt on mouse move without scaling up (scale(1))
   card.addEventListener('mousemove', (e) => {
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
-    const rotateX = (-y / rect.height) * 10;
-    const rotateY = (x / rect.width) * 10;
-    card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.03)`;
+    const rotateX = (-y / rect.height) * 8;
+    const rotateY = (x / rect.width) * 8;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1)`;
   });
 
-  // Click handler: play animation, cycle quotes, trigger pop bounce
+  // Click handler: replay animation
   card.addEventListener('click', () => {
     playAnimation();
-    quoteIndex = (quoteIndex + 1) % quotes.length;
-    if (speech) {
-      speech.textContent = quotes[quoteIndex];
-      speech.classList.remove('pop-anim');
-      void speech.offsetWidth;
-      speech.classList.add('pop-anim');
-    }
-
     card.classList.remove('card-click-anim');
     void card.offsetWidth;
     card.classList.add('card-click-anim');
