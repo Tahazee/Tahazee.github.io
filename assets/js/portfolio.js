@@ -235,19 +235,17 @@ function renderHero() {
       </div>
 
       <div class="hero-character-col animate ad2">
-        <div class="interactive-chroma-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="Interactive Taha Character — Click or hover to interact">
+        <div class="interactive-chroma-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="3D Taha Character Avatar — Hover to wink">
           <div class="chroma-standing-frame">
-            <!-- Hidden native video element (no loop attribute - holds pose on finish) -->
-            <video id="hero-chroma-video" src="assets/images/hero_walk_greenscreen.mp4" autoplay muted playsinline crossorigin="anonymous" style="display:none;"></video>
-            <!-- Real-time Chroma Key Canvas rendering transparent character without green screen background -->
-            <canvas id="hero-chroma-canvas" class="chroma-canvas"></canvas>
+            <img src="assets/images/hoodie_wave.png" alt="${p.name} 3D Character Waving" class="char-3d-img img-wave active">
+            <img src="assets/images/hoodie_wink.png" alt="${p.name} 3D Character Winking" class="char-3d-img img-wink">
           </div>
         </div>
       </div>
     </div>
   `;
 
-  initChromaKeyCharacter();
+  initInteractiveCharacter();
 
   // Trigger hero animations
   requestAnimationFrame(() => {
@@ -257,102 +255,42 @@ function renderHero() {
   });
 }
 
-/* Real-Time Ultra-Smooth Anti-Aliased Chroma Key Character Logic */
-function initChromaKeyCharacter() {
+/* Super-Smooth High-Definition 3D Character Winking Logic */
+function initInteractiveCharacter() {
   const card = $('#hero-interactive-character');
-  const video = $('#hero-chroma-video');
-  const canvas = $('#hero-chroma-canvas');
-  if (!card || !video || !canvas) return;
+  if (!card) return;
 
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const imgWave = card.querySelector('.img-wave');
+  const imgWink = card.querySelector('.img-wink');
 
-  video.loop = false; // Hold final pose when animation completes!
-  video.muted = true;
-  video.play().catch(() => {});
-
-  let animFrameId = null;
-
-  function processChromaFrame() {
-    if (video.videoWidth > 0) {
-      if (canvas.width !== video.videoWidth) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-      }
-
-      const w = canvas.width;
-      const h = canvas.height;
-
-      ctx.drawImage(video, 0, 0, w, h);
-      const frame = ctx.getImageData(0, 0, w, h);
-      const data = frame.data;
-      const len = data.length;
-
-      // Ultra-smooth high-precision green screen removal & green despill
-      for (let i = 0; i < len; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-
-        // Green Screen Key Color distance & difference
-        const maxRB = Math.max(r, b);
-        const gDiff = g - maxRB;
-
-        if (gDiff > 10 && g > 75) {
-          // Smoothstep alpha matte calculation for anti-aliased 3D edges
-          const alphaVal = 1.0 - Math.min(Math.max((gDiff - 10.0) / 32.0, 0.0), 1.0);
-          data[i + 3] = Math.floor(alphaVal * 255);
-
-          // Green Spill Suppression to eliminate green outline & produce clean 3D look
-          if (g > maxRB) {
-            data[i + 1] = Math.floor(maxRB + (g - maxRB) * alphaVal);
-          }
-        }
-      }
-
-      ctx.putImageData(frame, 0, 0);
-    }
-
-    animFrameId = requestAnimationFrame(processChromaFrame);
+  function showWink() {
+    if (imgWave) imgWave.classList.remove('active');
+    if (imgWink) imgWink.classList.add('active');
   }
 
-  animFrameId = requestAnimationFrame(processChromaFrame);
-
-  function playAnimation() {
-    if (video) {
-      video.currentTime = 0;
-      video.play().catch(() => {});
-    }
+  function showWave() {
+    if (imgWink) imgWink.classList.remove('active');
+    if (imgWave) imgWave.classList.add('active');
   }
 
-  // Hover effect: add class (does not scale or restart video)
+  // Hover winks character smoothly without scaling or size change
   card.addEventListener('mouseenter', () => {
     card.classList.add('is-hovered');
+    showWink();
   });
 
   card.addEventListener('mouseleave', () => {
     card.classList.remove('is-hovered');
-    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+    showWave();
   });
 
-  // Parallax 3D tilt on mouse move without scaling up (scale(1))
-  card.addEventListener('mousemove', (e) => {
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    const rotateX = (-y / rect.height) * 8;
-    const rotateY = (x / rect.width) * 8;
-    card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1)`;
-  });
-
-  // Click handler: replay animation
+  // Click toggles pose
   card.addEventListener('click', () => {
-    playAnimation();
-    card.classList.remove('card-click-anim');
-    void card.offsetWidth;
-    card.classList.add('card-click-anim');
-    setTimeout(() => {
-      card.classList.remove('card-click-anim');
-    }, 450);
+    if (imgWave && imgWave.classList.contains('active')) {
+      showWink();
+    } else {
+      showWave();
+    }
   });
 
   // Keyboard accessibility
