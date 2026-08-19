@@ -203,147 +203,40 @@ function renderHero() {
   if (!el) return;
   const p = DATA.profile;
   el.innerHTML = `
-    <div class="hero-layout-grid">
-      <div class="hero-text-col">
-        <div class="hero-eyebrow animate ad1">
-          <span class="hero-eyebrow-pill">
-            <span class="hero-eyebrow-dot"></span>
-            Autonomous Systems · Computer Vision · Software Engineering
-          </span>
-        </div>
-        <h1 class="hero-name animate ad2">
-          Hi, I'm <span class="text-gradient-shimmer">${p.name}</span>
-        </h1>
-        <p class="hero-statement animate ad3">
-          Software Engineer specializing in <strong>Autonomous Systems & Computer Vision</strong> — from ROS2 navigation pipelines for Mars Rovers to YOLOv8 models for real-time edge monitoring.
-        </p>
-        <div class="hero-meta animate ad4">
-          <div class="status-badge">
-            <span class="status-dot"></span>
-            ${p.statusLabel}
-          </div>
-          <div class="location-badge">📍 ${p.location}</div>
-        </div>
-        <div class="hero-actions animate ad5">
-          <a class="hero-cv-btn" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf">
-            <span>Download CV</span>
-          </a>
-          <a class="hero-contact-btn" href="#contact">
-            <span>Get in Touch</span>
-          </a>
-        </div>
+    <div class="hero-eyebrow animate ad1">
+      <span class="hero-eyebrow-pill">
+        <span class="hero-eyebrow-dot"></span>
+        Autonomous Systems · Computer Vision · Software Engineering
+      </span>
+    </div>
+    <h1 class="hero-name animate ad2">
+      Hi, I'm <span class="text-gradient-shimmer">${p.name}</span>
+    </h1>
+    <p class="hero-statement animate ad3">
+      Software Engineer specializing in <strong>Autonomous Systems & Computer Vision</strong> — from ROS2 navigation pipelines for Mars Rovers to YOLOv8 models for real-time edge monitoring.
+    </p>
+    <div class="hero-meta animate ad4">
+      <div class="status-badge">
+        <span class="status-dot"></span>
+        ${p.statusLabel}
       </div>
-
-      <div class="hero-character-col animate ad2">
-        <div class="interactive-character-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="Interactive Taha Avatar — Click or hover to wink">
-          <div class="character-speech-bubble" id="char-speech-bubble">Hi, I'm Taha! 👋</div>
-          <div class="character-standing-frame">
-            <div class="character-glow-bg"></div>
-            <img src="assets/images/hoodie_wave.png" alt="${p.name} Waving Character" class="char-pose-img img-wave active">
-            <img src="assets/images/hoodie_wink.png" alt="${p.name} Winking Character" class="char-pose-img img-wink">
-          </div>
-        </div>
-      </div>
+      <div class="location-badge">📍 ${p.location}</div>
+    </div>
+    <div class="hero-actions animate ad5">
+      <a class="hero-cv-btn" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf">
+        <span>Download CV</span>
+      </a>
+      <a class="hero-contact-btn" href="#contact">
+        <span>Get in Touch</span>
+      </a>
     </div>
   `;
-
-  initInteractiveCharacter();
 
   // Trigger hero animations
   requestAnimationFrame(() => {
     setTimeout(() => {
       $$('#hero-content .animate').forEach(e => e.classList.add('visible'));
     }, 120);
-  });
-}
-
-/* Interactive Hoodie Character Logic (Wave, Hover Wink & Speech Bubble) */
-function initInteractiveCharacter() {
-  const card = $('#hero-interactive-character');
-  const speech = $('#char-speech-bubble');
-  if (!card) return;
-
-  const imgWave = card.querySelector('.img-wave');
-  const imgWink = card.querySelector('.img-wink');
-
-  const quotes = [
-    "Hi, I'm Taha! 👋",
-    "Welcome to my portfolio! ✨",
-    "Building Autonomous & Vision AI 🤖",
-    "ROS2 & Edge ML Engineer 🚀",
-    "Wink! 😉"
-  ];
-  let quoteIndex = 0;
-
-  function showWink() {
-    if (imgWave) imgWave.classList.remove('active');
-    if (imgWink) imgWink.classList.add('active');
-  }
-
-  function showWave() {
-    if (imgWink) imgWink.classList.remove('active');
-    if (imgWave) imgWave.classList.add('active');
-  }
-
-  // Hover effect: switch to wink pose
-  card.addEventListener('mouseenter', () => {
-    card.classList.add('is-hovered');
-    showWink();
-    if (speech) {
-      speech.textContent = "Wink! 😉";
-      speech.classList.remove('pop-anim');
-      void speech.offsetWidth;
-      speech.classList.add('pop-anim');
-    }
-  });
-
-  card.addEventListener('mouseleave', () => {
-    card.classList.remove('is-hovered');
-    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
-    showWave();
-    if (speech) {
-      speech.textContent = quotes[quoteIndex];
-    }
-  });
-
-  // Parallax 3D tilt on mouse move
-  card.addEventListener('mousemove', (e) => {
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    const rotateX = (-y / rect.height) * 10;
-    const rotateY = (x / rect.width) * 10;
-    card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.03)`;
-  });
-
-  // Click card toggles pose & cycles speech quotes
-  card.addEventListener('click', () => {
-    quoteIndex = (quoteIndex + 1) % quotes.length;
-    if (speech) {
-      speech.textContent = quotes[quoteIndex];
-      speech.classList.remove('pop-anim');
-      void speech.offsetWidth;
-      speech.classList.add('pop-anim');
-    }
-
-    if (imgWave && imgWave.classList.contains('active')) {
-      showWink();
-    } else {
-      showWave();
-    }
-
-    card.classList.remove('card-click-anim');
-    void card.offsetWidth;
-    card.classList.add('card-click-anim');
-    setTimeout(() => card.classList.remove('card-click-anim'), 400);
-  });
-
-  // Keyboard accessibility
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      card.click();
-    }
   });
 }
 
