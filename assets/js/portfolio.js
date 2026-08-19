@@ -206,11 +206,10 @@ function renderHero() {
     <div class="hero-layout-grid">
       <div class="hero-text-col">
         <div class="hero-eyebrow animate ad1">
-          <span>Autonomous Systems</span>
-          <span class="hero-eyebrow-dot"></span>
-          <span>Computer Vision</span>
-          <span class="hero-eyebrow-dot"></span>
-          <span>Software Engineering</span>
+          <span class="hero-eyebrow-pill">
+            <span class="hero-eyebrow-dot"></span>
+            Autonomous Systems · Computer Vision · Software Engineering
+          </span>
         </div>
         <h1 class="hero-name animate ad2">
           Hi, I'm <span class="text-gradient-shimmer">${p.name}</span>
@@ -236,12 +235,12 @@ function renderHero() {
       </div>
 
       <div class="hero-character-col animate ad2">
-        <div class="interactive-character" id="hero-interactive-character" role="button" tabindex="0" aria-label="Interactive Taha Avatar — Click or hover to wink">
+        <div class="interactive-video-card" id="hero-interactive-character" role="button" tabindex="0" aria-label="Interactive Taha Character Video — Click or hover to interact">
           <div class="character-speech-bubble" id="char-speech-bubble">Hi, I'm Taha! 👋</div>
-          <div class="character-standing-frame">
-            <div class="character-glow-bg"></div>
-            <img src="assets/images/fullbody_smile.png" alt="${p.name} Character" class="char-img img-smile">
-            <img src="assets/images/fullbody_wink.png" alt="${p.name} Character Winking" class="char-img img-wink">
+          <div class="video-frame-wrap">
+            <div class="video-ambient-glow"></div>
+            <video id="hero-char-video" src="assets/images/hero_character.mp4" autoplay loop muted playsinline class="hero-char-video"></video>
+            <div class="video-card-overlay"></div>
           </div>
         </div>
       </div>
@@ -258,11 +257,17 @@ function renderHero() {
   });
 }
 
-/* Interactive Character Logic (Winking, Speech Bubble, Parallax Tilt) */
+/* Interactive Character Logic (Video Control, Speech Bubble, Parallax Tilt) */
 function initInteractiveCharacter() {
-  const char = $('#hero-interactive-character');
+  const card = $('#hero-interactive-character');
   const speech = $('#char-speech-bubble');
-  if (!char) return;
+  const video = $('#hero-char-video');
+  if (!card) return;
+
+  if (video) {
+    video.muted = true;
+    video.play().catch(() => {});
+  }
 
   const quotes = [
     "Hi, I'm Taha! 👋",
@@ -273,29 +278,30 @@ function initInteractiveCharacter() {
   ];
   let quoteIndex = 0;
 
-  // Hover triggers wink
-  char.addEventListener('mouseenter', () => {
-    char.classList.add('is-winking');
+  // Hover triggers video playback acceleration & card glow
+  card.addEventListener('mouseenter', () => {
+    card.classList.add('is-hovered');
+    if (video) video.playbackRate = 1.25;
   });
 
-  char.addEventListener('mouseleave', () => {
-    char.classList.remove('is-winking');
-    char.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+  card.addEventListener('mouseleave', () => {
+    card.classList.remove('is-hovered');
+    if (video) video.playbackRate = 1.0;
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
   });
 
   // Parallax 3D tilt on mouse move
-  char.addEventListener('mousemove', (e) => {
-    const rect = char.getBoundingClientRect();
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
-    const rotateX = (-y / rect.height) * 12;
-    const rotateY = (x / rect.width) * 12;
-    char.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.04)`;
+    const rotateX = (-y / rect.height) * 10;
+    const rotateY = (x / rect.width) * 10;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.03)`;
   });
 
-  // Click handler: cycle quotes and trigger bounce animation
-  char.addEventListener('click', () => {
-    char.classList.add('is-winking');
+  // Click handler: cycle speech quotes and trigger pop bounce animation
+  card.addEventListener('click', () => {
     quoteIndex = (quoteIndex + 1) % quotes.length;
     if (speech) {
       speech.textContent = quotes[quoteIndex];
@@ -304,44 +310,21 @@ function initInteractiveCharacter() {
       speech.classList.add('pop-anim');
     }
 
-    const frame = char.querySelector('.character-standing-frame');
-    if (frame) {
-      frame.classList.remove('bounce-click');
-      void frame.offsetWidth;
-      frame.classList.add('bounce-click');
-      setTimeout(() => {
-        frame.classList.remove('bounce-click');
-      }, 500);
-    }
-
+    card.classList.remove('card-click-anim');
+    void card.offsetWidth;
+    card.classList.add('card-click-anim');
     setTimeout(() => {
-      if (!char.matches(':hover')) {
-        char.classList.remove('is-winking');
-      }
-    }, 1200);
+      card.classList.remove('card-click-anim');
+    }, 450);
   });
 
-  // Keyboard support
-  char.addEventListener('keydown', (e) => {
+  // Keyboard accessibility
+  card.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      char.click();
+      card.click();
     }
   });
-
-  // Periodic automatic idle wink every 4 seconds when idle
-  if (!window._heroIdleWinkInterval) {
-    window._heroIdleWinkInterval = setInterval(() => {
-      if (char && document.body.contains(char) && !char.matches(':hover') && !char.classList.contains('is-winking')) {
-        char.classList.add('is-winking');
-        setTimeout(() => {
-          if (!char.matches(':hover')) {
-            char.classList.remove('is-winking');
-          }
-        }, 450);
-      }
-    }, 4000);
-  }
 }
 
 /* ── ABOUT (Screen Shade Bento Grid with Portfolio Summary & Hobbies) ── */
