@@ -861,21 +861,26 @@ function renderProjects() {
       ${DATA.projects.map((pr, i) => {
         const metric = leadMetric[pr.id];
         const badgeCls = statusMap[pr.status] || 'proj-badge-paused';
-        const themeCls = themeMap[pr.id] || 'theme-violet';
+        const isFeatured = pr.id === 'iglasses' || i === 0;
+        const cardCls = isFeatured ? 'proj-v-card proj-featured' : 'proj-v-card';
         const githubUrl = pr.github || 'https://github.com/Tahazee';
         const websiteUrl = pr.website || pr.demo;
 
         return `
-          <div class="proj-v-card ${themeCls} tilt-card animate" style="transition-delay:${(i % 2) * 0.08}s">
+          <div class="${cardCls} tilt-card animate" style="transition-delay:${(i % 2) * 0.08}s">
             <div class="proj-v-shine"></div>
 
             <div class="proj-v-header">
-              <span class="proj-v-cat font-mono">${pr.category}</span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="proj-v-cat font-mono">${pr.category}</span>
+                ${isFeatured ? `<span class="proj-featured-badge font-mono">★ FEATURED AI</span>` : ''}
+              </div>
               <span class="proj-v-badge ${badgeCls}">${pr.status}</span>
             </div>
 
             <div class="proj-v-body">
               <h3 class="proj-v-title">${pr.title}</h3>
+
               
               ${metric ? `
                 <div class="proj-v-metric">

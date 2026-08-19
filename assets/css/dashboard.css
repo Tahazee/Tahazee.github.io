@@ -8,40 +8,43 @@
 /* ── TOKENS ─────────────────────────────────────────────── */
 :root {
   /* backgrounds */
-  --bg:        #edeaf8;
-  --bg-alt:    #e5e2f2;
-  --card:      #ffffff;
-  --card-2:    #f8f7fe;
+  --bg:        #F5F5F2;
+  --bg-alt:    #EEEEEB;
+  --card:      #FFFFFF;
+  --card-hover:#FAF9F6;
+  --card-2:    #EEEEEB;
 
   /* borders */
-  --border:    #dddaf0;
-  --border-2:  #e8e6f8;
+  --border:    #DEDED9;
+  --border-2:  #E8E8E3;
+  --border-hover:#C8C8C1;
 
   /* text */
-  --t1: #18163a;
-  --t2: #4a4872;
-  --t3: #8b89b8;
-  --t4: #b8b6d4;
+  --t1: #111111;
+  --t2: #333333;
+  --t3: #686868;
+  --t4: #888888;
 
   /* accents */
-  --purple: #6366f1;
-  --purple-dim: rgba(99,102,241,0.1);
+  --purple: #6D28D9;
+  --purple-dim: rgba(109,40,217,0.08);
   --blue:   #3b82f6;
-  --blue-dim: rgba(59,130,246,0.1);
-  --green:  #22c55e;
-  --green-dim: rgba(34,197,94,0.1);
-  --orange: #f97316;
-  --orange-dim: rgba(249,115,22,0.1);
-  --red:    #ef4444;
-  --red-dim: rgba(239,68,68,0.1);
-  --yellow: #eab308;
-  --pink:   #ec4899;
-  --teal:   #14b8a6;
+  --blue-dim: rgba(59,130,246,0.08);
+  --green:  #16a34a;
+  --green-dim: rgba(22,163,74,0.08);
+  --orange: #ea580c;
+  --orange-dim: rgba(234,88,12,0.08);
+  --red:    #dc2626;
+  --red-dim: rgba(220,38,38,0.08);
+  --yellow: #ca8a04;
+  --pink:   #db2777;
+  --teal:   #0d9488;
 
   /* shadows */
-  --shadow-sm: 0 1px 3px rgba(80,70,160,0.07);
-  --shadow-md: 0 2px 8px rgba(80,70,160,0.1);
-  --shadow-lg: 0 4px 20px rgba(80,70,160,0.13);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.03);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 28px rgba(0,0,0,0.07);
+
 
   /* layout */
   --topbar-h: 52px;
@@ -63,6 +66,36 @@
   --fast: 0.15s;
   --mid:  0.25s;
 }
+
+:root[data-theme="dark"], html[data-theme="dark"] {
+  /* backgrounds */
+  --bg:        #0A0A0B;
+  --bg-alt:    #16171A;
+  --card:      #111214;
+  --card-hover:#17181B;
+  --card-2:    #16171A;
+
+  /* borders */
+  --border:    #25262A;
+  --border-2:  #1F2024;
+  --border-hover:#36383E;
+
+  /* text */
+  --t1: #F2F2F2;
+  --t2: #E0E0E0;
+  --t3: #92949A;
+  --t4: #6B6D74;
+
+  /* accents */
+  --purple: #8B5CF6;
+  --purple-dim: rgba(139,92,246,0.12);
+
+  /* shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.6);
+}
+
 
 /* ── RESET ───────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
