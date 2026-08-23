@@ -883,7 +883,7 @@ function renderProjects() {
               <!-- MEDIA SIDE (FULL-BLEED IMAGE WITH GRADIENT SCANLINE CUT) -->
               <div class="panel-media-side">
                 <div class="panel-image-wrapper">
-                  <img src="${imgSrc}" alt="${pr.title}" class="panel-img" loading="${i === 0 ? 'eager' : 'lazy'}" onerror="this.src='images/ros2 project.png'">
+                  <img src="${pr.image || projectImages[pr.id] || 'images/ros2 project.png'}" alt="${pr.title}" class="panel-img" loading="${i === 0 ? 'eager' : 'lazy'}" onerror="this.src='images/ros2 project.png'">
                   <div class="panel-img-scrim"></div>
                   ${metric ? `
                     <div class="panel-metric-badge font-mono">
