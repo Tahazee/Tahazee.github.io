@@ -21,16 +21,21 @@ function initScrollAnimations() {
 /* ── ACTIVE NAV ─────────────────────────────────────────────── */
 function initActiveNav() {
   const sections = $$('[data-section]');
-  const links    = $$('.nav-link');
+  const links    = $$('.nav-link, .bottom-nav-item[data-nav-target]');
 
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
         const id = e.target.dataset.section;
-        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+        links.forEach(l => {
+          const href = l.getAttribute('href');
+          const target = l.dataset.navTarget;
+          const isActive = href === '#' + id || target === id;
+          l.classList.toggle('active', isActive);
+        });
       }
     });
-  }, { threshold: 0.45 });
+  }, { threshold: 0.3 });
 
   sections.forEach(s => obs.observe(s));
 }
@@ -59,7 +64,7 @@ initTheme();
 if (!window._themeListenerAdded) {
   window._themeListenerAdded = true;
   document.addEventListener('click', (e) => {
-    const btn = e.target.closest('#theme-toggle-btn');
+    const btn = e.target.closest('#theme-toggle-btn, .bottom-theme-toggle');
     if (!btn) return;
     const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', current);
@@ -102,45 +107,42 @@ function renderNav() {
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
-      <button id="mobile-nav-toggle" class="nav-hamburger" aria-label="Toggle Navigation Menu" aria-expanded="false">
-        <svg class="hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-        <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
     </div>
 
-    <!-- Mobile Drawer Overlay -->
-    <div id="mobile-nav-drawer" class="mobile-nav-drawer" aria-hidden="true">
-      <div class="mobile-nav-backdrop"></div>
-      <div class="mobile-nav-content">
-        <nav class="mobile-nav-links">
-          <a class="mobile-nav-link" href="#experience">Work</a>
-          <a class="mobile-nav-link" href="#projects">Projects</a>
-          <a class="mobile-nav-link" href="#research">Research</a>
-          <a class="mobile-nav-link" href="#writing">Writing</a>
-          <a class="mobile-nav-link" href="#about">About</a>
-          <a class="mobile-nav-link" href="#certifications">Certifications</a>
-          <a class="mobile-nav-link" href="#contact">Contact</a>
-        </nav>
-        <div class="mobile-nav-footer">
-          <a class="mobile-nav-btn mobile-cv-btn" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf">
-            <span>📄 Download CV (PDF)</span>
-          </a>
-          <a class="mobile-nav-btn mobile-dash-btn" href="dashboard.html">
-            <span>📊 Analytics Dashboard ↗</span>
-          </a>
-        </div>
-      </div>
-    </div>
+    <!-- COOL MOBILE BOTTOM FLOATING DOCK -->
+    <nav id="mobile-bottom-nav" class="bottom-nav-dock" aria-label="Mobile Navigation">
+      <a class="bottom-nav-item" href="#experience" data-nav-target="experience" aria-label="Work Experience">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span>Work</span>
+      </a>
+      <a class="bottom-nav-item" href="#projects" data-nav-target="projects" aria-label="Featured Projects">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        <span>Projects</span>
+      </a>
+      <a class="bottom-nav-item" href="#research" data-nav-target="research" aria-label="Research">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Research</span>
+      </a>
+      <a class="bottom-nav-item" href="#about" data-nav-target="about" aria-label="About Me">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>About</span>
+      </a>
+      <a class="bottom-nav-item" href="dashboard.html" aria-label="Analytics Dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Dash</span>
+      </a>
+      <button class="bottom-nav-item bottom-theme-toggle" aria-label="Toggle Theme">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span>Theme</span>
+      </button>
+      <a class="bottom-nav-item bottom-cv-item" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf" aria-label="Download CV">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>CV</span>
+      </a>
+    </nav>
   `;
   initTheme();
-  initMobileNav();
 }
 
 function initMobileNav() {
