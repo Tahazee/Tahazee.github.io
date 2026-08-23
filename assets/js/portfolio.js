@@ -1093,17 +1093,20 @@ function renderAchievements() {
     <div class="dense-honours-list">
       ${items.map((ach, idx) => `
         <div class="dense-honour-row animate" style="transition-delay:${idx * 0.06}s">
-          <!-- SMALL SQUARE IMAGE THUMBNAIL BOX WITH DATE -->
+          <!-- SMALL SQUARE IMAGE THUMBNAIL BOX -->
           <div class="honour-thumb-box">
             <img src="${ach.image}" alt="${ach.title}" onerror="this.src='assets/images/portrait_headshot.png'">
-            <span class="honour-thumb-date font-mono">${ach.year}</span>
           </div>
 
           <div class="dense-honour-main">
             <div class="dense-honour-title">🏆 ${ach.title} <span class="dense-honour-award font-mono">(${ach.award})</span></div>
             <div class="dense-honour-org">${ach.organization} — ${ach.description}</div>
           </div>
-          <a href="${ach.link || ach.linkedinPost || '#'}" target="_blank" rel="noopener" class="dense-honour-link font-mono">Link ↗</a>
+          
+          <div class="dense-honour-action-wrap">
+            <span class="honour-date-badge font-mono">${ach.year}</span>
+            <a href="${ach.link || ach.linkedinPost || '#'}" target="_blank" rel="noopener" class="dense-honour-link font-mono">Link ↗</a>
+          </div>
         </div>
       `).join('')}
     </div>

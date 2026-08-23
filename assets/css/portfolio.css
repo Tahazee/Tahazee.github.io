@@ -4957,9 +4957,40 @@ html, body {
   box-shadow: 0 0 12px var(--accent);
 }
 
-/* MOBILE RESPONSIVE STACK & HORIZONTAL HORIZON */
-/* MOBILE RESPONSIVE STACK & CLEAN NON-OVERLAPPING PANELS */
+/* MOBILE RESPONSIVE STACK & VERTICAL SHOWCASE ANIMATION */
 @media (max-width: 820px) {
+  .hero-layout-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .hero-text-col {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  .hero-character-col {
+    order: 2 !important;
+    margin: 16px 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+  .hero-actions {
+    order: 3 !important;
+    margin-top: 16px !important;
+    justify-content: center !important;
+  }
+  .section-label {
+    font-size: clamp(1.3rem, 5vw, 1.8rem) !important;
+    margin-bottom: 24px !important;
+    word-break: break-word !important;
+  }
+  .section-num-watermark {
+    display: none !important;
+  }
+
   .project-showcase-container {
     min-height: 590px;
     height: auto;
@@ -4971,7 +5002,7 @@ html, body {
     padding: 4px 10px;
   }
   .showcase-panels-track {
-    flex-direction: row;
+    flex-direction: column !important;
     height: 590px;
   }
   .project-panel, .project-panel.panel-even {
@@ -5032,6 +5063,22 @@ html, body {
     left: 20px;
     z-index: 50;
   }
+}
+
+/* HONOUR DATE BADGE STYLING */
+.dense-honour-action-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.honour-date-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  padding: 2px 8px;
+  border-radius: 6px;
 }
 
 /* REDUCED MOTION ACCESSIBILITY SUPPORT */
