@@ -1361,3 +1361,15 @@ ul { list-style: none; }
   }
 }
 
+/* ── HIGH CONTRAST DASHBOARD TEXT VISIBILITY FIX ──────────────── */
+.panel, .profile-card, .sidebar-section, .stat-card, .activity-item, .proj-rail-card {
+  background: var(--card) !important;
+  color: var(--t1) !important;
+}
+.panel-title, .profile-name, .stat-val, .sidebar-item-title, .topbar-app-name, h1, h2, h3, h4 {
+  color: var(--t1) !important;
+}
+.profile-bio, .stat-label, .sidebar-item-sub, .panel-action, p, span, label {
+  color: var(--t2);
+}
+

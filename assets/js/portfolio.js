@@ -828,7 +828,9 @@ window.closeContributionsModal = function(e) {
   }
 };
 
-/* ── PROJECTS (Bento Asymmetric Grid + Mobile Scroll Carousel) ── */
+/* ── 04 PROJECTS (3D Curvy Coverflow Carousel) ─────────────────── */
+let currentProjIndex = 0;
+
 function renderProjects() {
   const el = $('#projects-content');
   if (!el) return;
@@ -848,59 +850,160 @@ function renderProjects() {
   };
 
   el.innerHTML = `
-    <div class="projects-swipe-hint font-mono">← Swipe Projects →</div>
-    <div class="projects-bento-grid">
-      ${DATA.projects.map((pr, i) => {
-        const metric = leadMetric[pr.id];
-        const badgeCls = statusMap[pr.status] || 'proj-badge-paused';
-        const isHero = i === 0;
-        const cardCls = isHero ? 'proj-v-card proj-hero-tile' : 'proj-v-card';
-        const githubUrl = pr.github || 'https://github.com/Tahazee';
+    <div class="coverflow-stage">
+      <button class="coverflow-nav-btn prev-btn" aria-label="Previous Project" onclick="shiftProjects(-1)">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
 
-        return `
-          <div class="${cardCls} tilt-card animate" style="transition-delay:${(i % 2) * 0.08}s">
-            <div class="proj-v-shine"></div>
+      <div class="coverflow-track" id="coverflow-track">
+        ${DATA.projects.map((pr, i) => {
+          const metric = leadMetric[pr.id];
+          const badgeCls = statusMap[pr.status] || 'proj-badge-paused';
+          const githubUrl = pr.github || 'https://github.com/Tahazee';
 
-            <div class="proj-v-header">
-              <div style="display:flex; align-items:center; gap:8px;">
+          return `
+            <div class="coverflow-card ${i === 0 ? 'active' : ''}" data-index="${i}" onclick="selectProjectCard(${i})">
+              <div class="proj-v-shine"></div>
+
+              <div class="proj-v-header">
                 <span class="proj-v-cat font-mono">${pr.category}</span>
-                ${isHero ? `<span class="proj-featured-badge font-mono">★ HERO PROJECT</span>` : ''}
+                <span class="proj-v-badge ${badgeCls}">${pr.status}</span>
               </div>
-              <span class="proj-v-badge ${badgeCls}">${pr.status}</span>
+
+              <div class="proj-v-body">
+                <h3 class="proj-v-title">${pr.title}</h3>
+
+                ${metric ? `
+                  <div class="proj-v-metric">
+                    <span class="proj-v-metric-val">${metric.val}</span>
+                    <span class="proj-v-metric-lbl">${metric.lbl}</span>
+                  </div>` : ''}
+
+                <p class="proj-v-desc">${pr.description}</p>
+              </div>
+
+              <div class="proj-v-tags-row">
+                ${pr.technologies.slice(0, 4).map(t => `<span class="proj-v-chip">${t}</span>`).join('')}
+              </div>
+
+              <div class="proj-v-actions">
+                <a href="${githubUrl}" target="_blank" rel="noopener" class="proj-v-btn btn-github">
+                  <span>GitHub ↗</span>
+                </a>
+                <a href="projects/${pr.id}/" class="proj-v-btn btn-details">
+                  <span>Case Study →</span>
+                </a>
+              </div>
             </div>
+          `;
+        }).join('')}
+      </div>
 
-            <div class="proj-v-body">
-              <h3 class="proj-v-title">${pr.title}</h3>
+      <button class="coverflow-nav-btn next-btn" aria-label="Next Project" onclick="shiftProjects(1)">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+      </button>
+    </div>
 
-              ${metric ? `
-                <div class="proj-v-metric">
-                  <span class="proj-v-metric-val">${metric.val}</span>
-                  <span class="proj-v-metric-lbl">${metric.lbl}</span>
-                </div>` : ''}
-
-              <p class="proj-v-desc">${pr.description}</p>
-            </div>
-
-            <div class="proj-v-tags-row">
-              ${pr.technologies.slice(0, 4).map(t => `<span class="proj-v-chip">${t}</span>`).join('')}
-            </div>
-
-            <div class="proj-v-actions">
-              <a href="${githubUrl}" target="_blank" rel="noopener" class="proj-v-btn btn-github">
-                <span>GitHub ↗</span>
-              </a>
-              <a href="projects/${pr.id}/" class="proj-v-btn btn-details">
-                <span>Case Study →</span>
-              </a>
-            </div>
-
-          </div>
-        `;
-      }).join('')}
+    <!-- CAROUSEL DOTS INDICATOR -->
+    <div class="coverflow-dots">
+      ${DATA.projects.map((_, i) => `
+        <span class="coverflow-dot ${i === 0 ? 'active' : ''}" onclick="selectProjectCard(${i})"></span>
+      `).join('')}
     </div>
   `;
 
-  init3dCardTilt();
+  updateCoverflow();
+  initCoverflowTouch();
+}
+
+window.selectProjectCard = function(index) {
+  if (index < 0 || index >= DATA.projects.length) return;
+  currentProjIndex = index;
+  updateCoverflow();
+};
+
+window.shiftProjects = function(dir) {
+  const newIdx = currentProjIndex + dir;
+  if (newIdx >= 0 && newIdx < DATA.projects.length) {
+    currentProjIndex = newIdx;
+    updateCoverflow();
+  }
+};
+
+function updateCoverflow() {
+  const cards = $$('.coverflow-card');
+  const dots = $$('.coverflow-dot');
+  if (!cards.length) return;
+
+  const isSmallScreen = window.innerWidth <= 640;
+
+  cards.forEach((card, i) => {
+    const diff = i - currentProjIndex;
+
+    if (diff === 0) {
+      card.style.transform = isSmallScreen 
+        ? 'translate3d(0, 0, 0) scale(1)' 
+        : 'perspective(1000px) translate3d(0, 0, 60px) rotateY(0deg) scale(1.06)';
+      card.style.opacity = '1';
+      card.style.zIndex = '10';
+      card.style.pointerEvents = 'auto';
+      card.classList.add('active');
+    } else if (diff === -1) {
+      card.style.transform = isSmallScreen
+        ? 'translate3d(-100px, 0, 0) scale(0.85)'
+        : 'perspective(1000px) translate3d(-150px, 0, -30px) rotateY(16deg) scale(0.86)';
+      card.style.opacity = '0.65';
+      card.style.zIndex = '5';
+      card.style.pointerEvents = 'auto';
+      card.classList.remove('active');
+    } else if (diff === 1) {
+      card.style.transform = isSmallScreen
+        ? 'translate3d(100px, 0, 0) scale(0.85)'
+        : 'perspective(1000px) translate3d(150px, 0, -30px) rotateY(-16deg) scale(0.86)';
+      card.style.opacity = '0.65';
+      card.style.zIndex = '5';
+      card.style.pointerEvents = 'auto';
+      card.classList.remove('active');
+    } else if (diff < -1) {
+      card.style.transform = 'perspective(1000px) translate3d(-260px, 0, -80px) rotateY(30deg) scale(0.7)';
+      card.style.opacity = '0.2';
+      card.style.zIndex = '1';
+      card.style.pointerEvents = 'none';
+      card.classList.remove('active');
+    } else {
+      card.style.transform = 'perspective(1000px) translate3d(260px, 0, -80px) rotateY(-30deg) scale(0.7)';
+      card.style.opacity = '0.2';
+      card.style.zIndex = '1';
+      card.style.pointerEvents = 'none';
+      card.classList.remove('active');
+    }
+  });
+
+  dots.forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentProjIndex);
+  });
+}
+
+function initCoverflowTouch() {
+  const track = $('#coverflow-track');
+  if (!track) return;
+
+  let startX = 0;
+  let dist = 0;
+
+  track.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    dist = 0;
+  }, { passive: true });
+
+  track.addEventListener('touchmove', (e) => {
+    dist = e.touches[0].clientX - startX;
+  }, { passive: true });
+
+  track.addEventListener('touchend', () => {
+    if (dist < -40) shiftProjects(1);
+    else if (dist > 40) shiftProjects(-1);
+  });
 }
 
 /* ── RESEARCH (Compact Bibliography List) ─────────────────────── */
@@ -955,7 +1058,7 @@ function renderEducation() {
   `;
 }
 
-/* ── ACHIEVEMENTS & HONOURS (Stat Spotlights + Dense List) ────── */
+/* ── ACHIEVEMENTS & HONOURS (Stat Spotlights + Small Square Image Thumbnails) ────── */
 function renderAchievements() {
   const el = $('#achievements-content');
   if (!el) return;
@@ -978,11 +1081,16 @@ function renderAchievements() {
       `).join('')}
     </div>
 
-    <!-- DENSE AWARD HONOURS LIST -->
+    <!-- DENSE AWARD HONOURS LIST WITH SMALL SQUARE IMAGE BOXES -->
     <div class="dense-honours-list">
       ${items.map((ach, idx) => `
         <div class="dense-honour-row animate" style="transition-delay:${idx * 0.06}s">
-          <div class="dense-honour-year font-mono">${ach.year}</div>
+          <!-- SMALL SQUARE IMAGE THUMBNAIL BOX WITH DATE -->
+          <div class="honour-thumb-box">
+            <img src="${ach.image}" alt="${ach.title}" onerror="this.src='assets/images/portrait_headshot.png'">
+            <span class="honour-thumb-date font-mono">${ach.year}</span>
+          </div>
+
           <div class="dense-honour-main">
             <div class="dense-honour-title">🏆 ${ach.title} <span class="dense-honour-award font-mono">(${ach.award})</span></div>
             <div class="dense-honour-org">${ach.organization} — ${ach.description}</div>
