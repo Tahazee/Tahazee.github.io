@@ -1502,11 +1502,21 @@ body::-webkit-scrollbar {
   }
 
   .heatmap-grid {
-    min-width: 540px !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 2px !important;
+    overflow-x: auto !important;
   }
 }
 
 @media (max-width: 480px) {
+  #dashboard {
+    padding: 4px !important;
+    gap: 10px !important;
+  }
   .stat-row {
     flex-direction: column !important;
     align-items: flex-start !important;
@@ -1515,11 +1525,11 @@ body::-webkit-scrollbar {
     grid-template-columns: 1fr !important;
   }
   #topbar {
-    padding: 0 8px !important;
+    padding: 0 6px !important;
     gap: 4px !important;
   }
   .topbar-btn {
-    padding: 4px 8px !important;
+    padding: 4px 6px !important;
     font-size: 0.72rem !important;
   }
 }
