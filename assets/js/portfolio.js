@@ -828,17 +828,19 @@ window.closeContributionsModal = function(e) {
   }
 };
 
-/* ── 04 FEATURED PROJECTS (Zoom-Reveal Project Gallery) ─────────────────── */
+/* ── 04 FEATURED PROJECTS (Full-Bleed Scroll-Panel Project Showcase) ── */
+let currentShowcaseIndex = 0;
+
 function renderProjects() {
   const el = $('#projects-content');
   if (!el) return;
 
   const projectImages = {
     'ros2-nav2':         'images/ros2 project.png',
-    'iglasses':          'images/iglasses_3rdplace_ytb.jpg',
-    'ulurover':          'images/sponsorship_250k.jpg',
-    'tarimtek':          'images/proje sergisi.jpg',
-    'anomaly-detection': 'images/bvcscert-logo.jpg',
+    'iglasses':          'images/Iglasses_project.png',
+    'ulurover':          'images/ulurover_project.png',
+    'tarimtek':          'images/tarimtek_project.png',
+    'anomaly-detection': 'images/datascience_project.png',
   };
 
   const leadMetric = {
@@ -852,105 +854,164 @@ function renderProjects() {
   const projects = DATA.projects;
 
   el.innerHTML = `
-    <div class="zoom-gallery-grid" id="zoom-gallery-grid">
-      ${projects.map((pr, i) => {
-        const metric = leadMetric[pr.id];
-        const imgSrc = projectImages[pr.id] || 'images/ros2 project.png';
-        const isHero = i === 0;
+    <div class="project-showcase-container" id="project-showcase-container">
+      
+      <!-- FLOATING SHOWCASE CONTROLS & PROGRESS COUNTER -->
+      <div class="showcase-controls">
+        <span class="showcase-counter font-mono" id="showcase-counter">01 / 0${projects.length}</span>
+        <div class="showcase-arrow-btns">
+          <button class="showcase-arrow-btn" aria-label="Previous Project" onclick="shiftShowcasePanel(-1)">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="showcase-arrow-btn" aria-label="Next Project" onclick="shiftShowcasePanel(1)">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+        </div>
+      </div>
 
-        return `
-          <a class="zoom-gallery-tile ${isHero ? 'tile-hero' : ''}" 
-             href="projects/${pr.id}/" 
-             data-tile-index="${i}"
-             tabindex="0"
-             aria-label="View case study for ${pr.title}">
-            
-            <!-- FULL-BLEED IMAGE WITH KEN BURNS DRIFT EFFECT -->
-            <div class="gallery-tile-media">
-              <img src="${imgSrc}" alt="${pr.title}" class="gallery-tile-img" loading="${i < 2 ? 'eager' : 'lazy'}" onerror="this.src='images/ros2 project.png'">
-              <div class="gallery-tile-scrim"></div>
-              ${metric ? `
-                <div class="gallery-metric-pill font-mono">
-                  <span class="pill-val">${metric.val}</span>
-                  <span class="pill-lbl">${metric.lbl}</span>
-                </div>` : ''}
+      <!-- FULL-BLEED SCROLL PANELS TRACK -->
+      <div class="showcase-panels-track" id="showcase-panels-track">
+        ${projects.map((pr, i) => {
+          const metric = leadMetric[pr.id];
+          const imgSrc = projectImages[pr.id] || 'images/ros2 project.png';
+          const githubUrl = pr.github || 'https://github.com/Tahazee';
+          const isEven = i % 2 !== 0;
+
+          return `
+            <div class="project-panel ${isEven ? 'panel-even' : 'panel-odd'} ${i === 0 ? 'active' : ''}" data-panel-index="${i}">
+              
+              <!-- MEDIA SIDE (FULL-BLEED IMAGE WITH GRADIENT SCANLINE CUT) -->
+              <div class="panel-media-side">
+                <div class="panel-image-wrapper">
+                  <img src="${imgSrc}" alt="${pr.title}" class="panel-img" loading="${i === 0 ? 'eager' : 'lazy'}" onerror="this.src='images/ros2 project.png'">
+                  <div class="panel-img-scrim"></div>
+                  ${metric ? `
+                    <div class="panel-metric-badge font-mono">
+                      <span class="metric-val">${metric.val}</span>
+                      <span class="metric-lbl">${metric.lbl}</span>
+                    </div>` : ''}
+                </div>
+              </div>
+
+              <!-- TEXT SIDE (PRECISION TYPOGRAPHY & TAGS) -->
+              <div class="panel-text-side">
+                <div class="panel-eyebrow font-mono">
+                  <span class="panel-terminal-icon">[ ⚡ ]</span>
+                  <span>PROJECT — 0${i + 1}</span>
+                  <span class="panel-category-chip">${pr.category}</span>
+                </div>
+
+                <h3 class="panel-headline">${pr.title}</h3>
+
+                <p class="panel-body-txt">${pr.description}</p>
+
+                <div class="panel-tech-chips">
+                  ${pr.technologies.slice(0, 5).map(t => `
+                    <span class="panel-chip font-mono">[ ${t} ]</span>
+                  `).join('')}
+                </div>
+
+                <div class="panel-actions-row">
+                  <a href="projects/${pr.id}/" class="panel-cta-btn font-mono">
+                    <span>Read Case Study</span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                  <a href="${githubUrl}" target="_blank" rel="noopener" class="panel-github-link font-mono">
+                    <span>GitHub ↗</span>
+                  </a>
+                </div>
+              </div>
+
             </div>
+          `;
+        }).join('')}
+      </div>
 
-            <!-- ZOOM REVEAL OVERLAY DETAILS -->
-            <div class="gallery-tile-overlay">
-              <div class="gallery-eyebrow font-mono">
-                <span class="gallery-terminal-icon">[ ⚡ ]</span>
-                <span>PROJECT — 0${i + 1}</span>
-                <span class="gallery-cat-tag">${pr.category}</span>
-              </div>
+      <!-- PAGINATION DOTS -->
+      <div class="showcase-dots font-mono">
+        ${projects.map((_, i) => `
+          <button class="showcase-dot ${i === 0 ? 'active' : ''}" aria-label="Go to project ${i + 1}" onclick="selectShowcasePanel(${i})"></button>
+        `).join('')}
+      </div>
 
-              <h3 class="gallery-title">${pr.title}</h3>
-              <p class="gallery-desc">${pr.description}</p>
-
-              <div class="gallery-tech-chips font-mono">
-                ${pr.technologies.slice(0, 4).map(t => `<span class="gallery-chip">[ ${t} ]</span>`).join('')}
-              </div>
-
-              <div class="gallery-cta-link font-mono">
-                <span>View Case Study</span>
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-            </div>
-
-          </a>
-        `;
-      }).join('')}
     </div>
   `;
 
-  initZoomGalleryInteractions();
+  updateShowcaseDisplay();
+  initShowcaseInteractions();
 }
 
-function initZoomGalleryInteractions() {
-  const grid = $('#zoom-gallery-grid');
-  if (!grid) return;
+window.selectShowcasePanel = function(index) {
+  if (index < 0 || index >= DATA.projects.length) return;
+  currentShowcaseIndex = index;
+  updateShowcaseDisplay();
+};
 
-  const tiles = $$('.zoom-gallery-tile', grid);
+window.shiftShowcasePanel = function(dir) {
+  const newIdx = currentShowcaseIndex + dir;
+  if (newIdx >= 0 && newIdx < DATA.projects.length) {
+    currentShowcaseIndex = newIdx;
+    updateShowcaseDisplay();
+  }
+};
 
-  // Mobile Tap-to-Reveal Interaction
-  tiles.forEach(tile => {
-    tile.addEventListener('click', (e) => {
-      const isMobile = window.innerWidth <= 820;
-      if (isMobile) {
-        if (!tile.classList.contains('tap-revealed')) {
-          e.preventDefault(); // First tap reveals overlay
-          tiles.forEach(t => {
-            if (t !== tile) t.classList.remove('tap-revealed');
-          });
-          tile.classList.add('tap-revealed');
-        }
-      }
-    });
+function updateShowcaseDisplay() {
+  const panels = $$('.project-panel');
+  const dots = $$('.showcase-dot');
+  const counter = $('#showcase-counter');
+  if (!panels.length) return;
 
-    // Keyboard focus parity
-    tile.addEventListener('focus', () => {
-      tiles.forEach(t => {
-        if (t !== tile) t.classList.add('dimmed');
-      });
-    });
+  if (counter) {
+    counter.textContent = `0${currentShowcaseIndex + 1} / 0${DATA.projects.length}`;
+  }
 
-    tile.addEventListener('blur', () => {
-      tiles.forEach(t => t.classList.remove('dimmed'));
-    });
+  panels.forEach((panel, i) => {
+    const isCurrent = i === currentShowcaseIndex;
+    panel.classList.toggle('active', isCurrent);
   });
 
-  // Desktop Hover Dimming of Neighboring Tiles
-  tiles.forEach(tile => {
-    tile.addEventListener('mouseenter', () => {
-      tiles.forEach(t => {
-        if (t !== tile) t.classList.add('dimmed');
-      });
-    });
-
-    tile.addEventListener('mouseleave', () => {
-      tiles.forEach(t => t.classList.remove('dimmed'));
-    });
+  dots.forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentShowcaseIndex);
   });
+
+  const track = $('#showcase-panels-track');
+  if (track) {
+    const isMobile = window.innerWidth <= 820;
+    if (isMobile) {
+      track.style.transform = `translateX(-${currentShowcaseIndex * 100}%)`;
+    } else {
+      track.style.transform = `translateY(-${currentShowcaseIndex * 100}%)`;
+    }
+  }
+}
+
+function initShowcaseInteractions() {
+  const container = $('#project-showcase-container');
+  if (!container) return;
+
+  let startX = 0, startY = 0, distX = 0, distY = 0;
+
+  container.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    distX = 0;
+    distY = 0;
+  }, { passive: true });
+
+  container.addEventListener('touchmove', (e) => {
+    distX = e.touches[0].clientX - startX;
+    distY = e.touches[0].clientY - startY;
+  }, { passive: true });
+
+  container.addEventListener('touchend', () => {
+    const isMobile = window.innerWidth <= 820;
+    if (isMobile && Math.abs(distX) > 40) {
+      if (distX < 0) shiftShowcasePanel(1);
+      else shiftShowcasePanel(-1);
+    }
+  });
+
+  window.addEventListener('resize', updateShowcaseDisplay, { passive: true });
 }
 
 /* ── RESEARCH (Compact Bibliography List) ─────────────────────── */
