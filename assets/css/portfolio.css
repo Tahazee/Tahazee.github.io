@@ -4779,6 +4779,8 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 1 !important;
+  filter: none !important;
   transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   transform: scale(1.06);
 }
@@ -4788,9 +4790,8 @@ html, body {
 }
 
 .panel-img-scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(13, 14, 20, 0.1) 0%, rgba(13, 14, 20, 0.6) 100%);
+  display: none !important;
+  background: none !important;
 }
 
 .panel-metric-badge {
@@ -5039,6 +5040,15 @@ html, body {
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* ── GLOBAL SMOOTH SCROLL & FOOTER BOTTOM NAV CLEARANCE ───────── */
+html {
+  scroll-behavior: smooth !important;
+}
+
+body {
+  padding-bottom: 120px !important;
 }
 
 /* ── REMOVE ALL SCROLLBARS FROM ALL SECTIONS FROM ABOUT TO END ──── */

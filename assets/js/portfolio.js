@@ -948,11 +948,11 @@ window.selectShowcasePanel = function(index) {
 };
 
 window.shiftShowcasePanel = function(dir) {
-  const newIdx = currentShowcaseIndex + dir;
-  if (newIdx >= 0 && newIdx < DATA.projects.length) {
-    currentShowcaseIndex = newIdx;
-    updateShowcaseDisplay();
-  }
+  let newIdx = currentShowcaseIndex + dir;
+  if (newIdx >= DATA.projects.length) newIdx = 0;
+  if (newIdx < 0) newIdx = DATA.projects.length - 1;
+  currentShowcaseIndex = newIdx;
+  updateShowcaseDisplay();
 };
 
 function updateShowcaseDisplay() {
