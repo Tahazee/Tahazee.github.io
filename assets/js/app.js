@@ -832,6 +832,25 @@ async function loadGitHub() {
   }
 }
 
+/* ── DASHBOARD THEME TOGGLE ──────────────────────────────── */
+function initThemeToggle() {
+  const toggleBtn = $('#theme-toggle-dash');
+  const iconSpan = $('#theme-icon-dash');
+  
+  const currentTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  if (iconSpan) iconSpan.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+
+  if (!toggleBtn) return;
+  toggleBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const nextTheme = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('theme', nextTheme);
+    if (iconSpan) iconSpan.textContent = nextTheme === 'dark' ? '☀️' : '🌙';
+  });
+}
+
 /* ── INIT ────────────────────────────────────────────────── */
 function init() {
   const steps = [
@@ -840,6 +859,7 @@ function init() {
     ['projects rail',         renderProjectsRail],
     ['events',                initEvents],
     ['mobile dashboard tabs', initMobileDashboardTabs],
+    ['theme toggle',          initThemeToggle],
   ];
 
 

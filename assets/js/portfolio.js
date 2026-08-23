@@ -976,12 +976,7 @@ function updateShowcaseDisplay() {
 
   const track = $('#showcase-panels-track');
   if (track) {
-    const isMobile = window.innerWidth <= 820;
-    if (isMobile) {
-      track.style.transform = `translateX(-${currentShowcaseIndex * 100}%)`;
-    } else {
-      track.style.transform = `translateY(-${currentShowcaseIndex * 100}%)`;
-    }
+    track.style.transform = `translateY(-${currentShowcaseIndex * 100}%)`;
   }
 }
 
@@ -1655,11 +1650,11 @@ function initCursorCanvas() {
         grad.addColorStop(0.85, `rgba(79, 70, 229, ${0.015 * currentAlpha})`);
         grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       } else {
-        // Soft Atmospheric Pink / Rose Light Pool for Light Mode
-        grad.addColorStop(0, `rgba(244, 114, 182, ${0.14 * currentAlpha})`);
-        grad.addColorStop(0.35, `rgba(236, 72, 153, ${0.09 * currentAlpha})`);
-        grad.addColorStop(0.65, `rgba(219, 39, 119, ${0.045 * currentAlpha})`);
-        grad.addColorStop(0.85, `rgba(244, 63, 94, ${0.018 * currentAlpha})`);
+        // Deep Violet / Purple Ambient Light Pool for Light Mode
+        grad.addColorStop(0, `rgba(167, 139, 250, ${0.12 * currentAlpha})`);
+        grad.addColorStop(0.35, `rgba(139, 92, 246, ${0.08 * currentAlpha})`);
+        grad.addColorStop(0.65, `rgba(124, 58, 237, ${0.04 * currentAlpha})`);
+        grad.addColorStop(0.85, `rgba(79, 70, 229, ${0.015 * currentAlpha})`);
         grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       }
 

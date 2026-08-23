@@ -1435,3 +1435,21 @@ body::-webkit-scrollbar {
   }
 }
 
+/* ── RESPONSIVE CHARTS, HEATMAPS & TABLES FIT ────────────────── */
+.chart-area, .heatmap-outer {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  box-sizing: border-box !important;
+}
+
+.chart-canvas {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.heatmap-grid {
+  min-width: 580px;
+}
+
