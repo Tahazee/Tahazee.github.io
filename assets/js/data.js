@@ -51,7 +51,7 @@ const DATA = {
       id: 'iglasses',
       title: 'iGlasses — AI Wearable',
       slug: 'iglasses',
-      image: 'images/Iglasses_project.png',
+      image: 'images/iglasses_project.png',
       description: 'Architected a real-time computer vision system for AI wearables utilizing Deep Learning models for multi-class obstacle detection and NLP voice-controlled interaction.',
       longDescription: 'Architected a real-time computer vision system for AI wearables utilizing Deep Learning models for multi-class obstacle detection and scene recognition. Integrated Natural Language Processing (NLP) for voice-controlled system interaction, ensuring low-latency response times for visually impaired users. Trained custom vision models for edge deployment, securing 3rd place at Youth Tech Innovators 2025.',
       category: 'Computer Vision',

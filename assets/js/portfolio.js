@@ -837,7 +837,7 @@ function renderProjects() {
 
   const projectImages = {
     'ros2-nav2':         'images/ros2 project.png',
-    'iglasses':          'images/Iglasses_project.png',
+    'iglasses':          'images/iglasses_project.png',
     'ulurover':          'images/ulurover_project.png',
     'tarimtek':          'images/tarimtek_project.png',
     'anomaly-detection': 'images/datascience_project.png',
