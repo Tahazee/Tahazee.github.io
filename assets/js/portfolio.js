@@ -717,7 +717,7 @@ window.switchBentoTab = function(tabName) {
   });
 };
 
-/* ── EXPERIENCE (Interactive Horizon Spotlight Rail) ── */
+/* ── EXPERIENCE (Clean Vertical Timeline Rail - No Card Boxes) ── */
 function renderExperience() {
   const el = $('#experience-content');
   if (!el) return;
@@ -727,69 +727,40 @@ function renderExperience() {
     'bvcs': 'images/bvcscert-logo.jpg'
   };
 
-  const metricsMap = {
-    'processturk': 'Process Automation & Telemetry',
-    'bvcs': 'Software QA & Vision Verification'
-  };
-
   el.innerHTML = `
-    <div class="exp-spotlight-rail">
+    <div class="vertical-timeline-rail">
       ${DATA.experience.map((e, idx) => `
-        <div class="exp-spotlight-item animate ad${idx + 1}">
+        <div class="timeline-entry animate ad${idx + 1}">
+          <div class="timeline-node-dot"></div>
           
-          <!-- LEFT: SHOWCASE PANEL -->
-          <div class="exp-spotlight-logo-panel">
-            <div class="exp-spotlight-logo-wrap">
-              <img src="${e.image || imagesMap[e.id]}" alt="${e.org}"
-                   onerror="this.src='assets/images/portrait_headshot.png'">
+          <div class="timeline-entry-hdr">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <span class="timeline-dates-tag font-mono">${e.dates}</span>
+              <span class="timeline-location-tag">📍 ${e.location}</span>
             </div>
-            <h3 class="exp-spotlight-org">${e.org}</h3>
-            <div class="exp-spotlight-meta">
-              <span>📍 ${e.location}</span>
-              <span>${e.type}</span>
-            </div>
-            <span class="exp-spotlight-chip">${metricsMap[e.id] || 'Field Deployed'}</span>
-            ${e.website ? `
-              <a class="exp-website-link-btn" href="${e.website}" target="_blank" rel="noopener noreferrer" title="Visit ${e.websiteLabel || e.website}">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                <span>${e.websiteLabel || 'Website'} ↗</span>
-              </a>
-            ` : ''}
+            <h3 class="timeline-role-title">${e.role} <span class="timeline-company-name">@ ${e.org}</span></h3>
           </div>
 
-          <!-- RIGHT: DETAILS PANEL -->
-          <div class="exp-spotlight-details-panel">
-            <div class="exp-spotlight-hdr">
-              <h2 class="exp-spotlight-role">${e.role}</h2>
-              <span class="exp-spotlight-dates">${e.dates}</span>
-            </div>
+          <p class="timeline-desc-txt">${e.description}</p>
 
-            <p class="exp-spotlight-desc">${e.description}</p>
-
-            <!-- ACHIEVEMENTS LIST -->
-            <div class="exp-spotlight-bullets">
-              ${e.achievements.map(ach => `
-                <div class="exp-spotlight-bullet-row">
-                  <span class="exp-spotlight-bullet-icon">✦</span>
-                  <span class="exp-spotlight-bullet-txt">${ach}</span>
-                </div>
-              `).join('')}
-            </div>
-
-            <!-- TECH STACK TAGS & MODAL BUTTON -->
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 14px;">
-              <div class="exp-spotlight-tags">
-                ${e.technologies.map(t => `
-                  <span class="exp-spotlight-tag">${t}</span>
-                `).join('')}
+          <div class="timeline-bullet-list">
+            ${e.achievements.map(ach => `
+              <div class="timeline-bullet-row">
+                <span class="timeline-bullet-arrow">→</span>
+                <span class="timeline-bullet-txt">${ach}</span>
               </div>
+            `).join('')}
+          </div>
 
-              <button class="exp-contrib-btn" onclick="openContributionsModal('${e.id}')">
-                <span>⚡ Technical Breakdown & Impact</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
+          <div class="timeline-footer-row">
+            <div class="timeline-tech-tags">
+              ${e.technologies.map(t => `<span class="timeline-tech-chip">${t}</span>`).join('')}
             </div>
 
+            <button class="exp-contrib-btn" onclick="openContributionsModal('${e.id}')">
+              <span>⚡ Technical Breakdown</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
           </div>
 
         </div>
@@ -845,7 +816,7 @@ window.openContributionsModal = function(expId) {
     </div>
   `;
 
-  backdrop.classList.add('open');
+backdrop.classList.add('open');
   document.body.style.overflow = 'hidden';
 };
 
@@ -857,33 +828,7 @@ window.closeContributionsModal = function(e) {
   }
 };
 
-/* Slower Multi-Stage Scroll Reveal Observer */
-function initSlowExpScroll() {
-  const items = document.querySelectorAll('.exp-slow-step');
-  if (!items.length) return;
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Stage 1: Card comes upwards slowly
-        entry.target.classList.add('entering');
-
-        // Stage 2: On stop, shift image left & slide in floating text slowly
-        setTimeout(() => {
-          entry.target.classList.add('revealed');
-        }, 250);
-      }
-    });
-  }, {
-    threshold: 0.2,
-    rootMargin: '0px 0px -60px 0px'
-  });
-
-  items.forEach(item => observer.observe(item));
-}
-
-/* ── PROJECTS ───────────────────────────────────────────────── */
-/* ── PROJECTS (Vibrant Unique Themes + GitHub & Website Links + 3D Tilt) ── */
+/* ── PROJECTS (Bento Asymmetric Grid + Mobile Scroll Carousel) ── */
 function renderProjects() {
   const el = $('#projects-content');
   if (!el) return;
@@ -892,14 +837,6 @@ function renderProjects() {
     completed: 'proj-badge-completed',
     active:    'proj-badge-active',
     paused:    'proj-badge-paused',
-  };
-
-  const themeMap = {
-    'iglasses':          'theme-violet',
-    'ulurover':          'theme-emerald',
-    'tarimtek':          'theme-amber',
-    'anomaly-detection': 'theme-cyan',
-    'ros2-nav2':         'theme-cobalt'
   };
 
   const leadMetric = {
@@ -911,14 +848,14 @@ function renderProjects() {
   };
 
   el.innerHTML = `
-    <div class="projects-grid-vibrant">
+    <div class="projects-swipe-hint font-mono">← Swipe Projects →</div>
+    <div class="projects-bento-grid">
       ${DATA.projects.map((pr, i) => {
         const metric = leadMetric[pr.id];
         const badgeCls = statusMap[pr.status] || 'proj-badge-paused';
-        const isFeatured = pr.id === 'iglasses' || i === 0;
-        const cardCls = isFeatured ? 'proj-v-card proj-featured' : 'proj-v-card';
+        const isHero = i === 0;
+        const cardCls = isHero ? 'proj-v-card proj-hero-tile' : 'proj-v-card';
         const githubUrl = pr.github || 'https://github.com/Tahazee';
-        const websiteUrl = pr.website || pr.demo;
 
         return `
           <div class="${cardCls} tilt-card animate" style="transition-delay:${(i % 2) * 0.08}s">
@@ -927,7 +864,7 @@ function renderProjects() {
             <div class="proj-v-header">
               <div style="display:flex; align-items:center; gap:8px;">
                 <span class="proj-v-cat font-mono">${pr.category}</span>
-                ${isFeatured ? `<span class="proj-featured-badge font-mono">★ FEATURED AI</span>` : ''}
+                ${isHero ? `<span class="proj-featured-badge font-mono">★ HERO PROJECT</span>` : ''}
               </div>
               <span class="proj-v-badge ${badgeCls}">${pr.status}</span>
             </div>
@@ -935,7 +872,6 @@ function renderProjects() {
             <div class="proj-v-body">
               <h3 class="proj-v-title">${pr.title}</h3>
 
-              
               ${metric ? `
                 <div class="proj-v-metric">
                   <span class="proj-v-metric-val">${metric.val}</span>
@@ -945,41 +881,16 @@ function renderProjects() {
               <p class="proj-v-desc">${pr.description}</p>
             </div>
 
-            <!-- TECH TAGS ROW -->
             <div class="proj-v-tags-row">
               ${pr.technologies.slice(0, 4).map(t => `<span class="proj-v-chip">${t}</span>`).join('')}
             </div>
 
-            <!-- ACTION BUTTONS ROW: GITHUB, WEBSITE, LINKEDIN & DETAILS -->
             <div class="proj-v-actions">
-              <a href="${githubUrl}" target="_blank" rel="noopener" class="proj-v-btn btn-github" title="View Source on GitHub">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                </svg>
-                <span>GitHub</span>
+              <a href="${githubUrl}" target="_blank" rel="noopener" class="proj-v-btn btn-github">
+                <span>GitHub ↗</span>
               </a>
-
-              ${pr.linkedinPost ? `
-                <a href="${pr.linkedinPost}" target="_blank" rel="noopener" class="proj-v-btn btn-linkedin" title="View Official LinkedIn Post & Proof">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
-                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.77a1.63 1.63 0 1 0 0 3.26 1.63 1.63 0 0 0 0-3.26z"/>
-                  </svg>
-                  <span>LinkedIn Post</span>
-                </a>
-              ` : ''}
-
-              ${websiteUrl ? `
-                <a href="${websiteUrl}" target="_blank" rel="noopener" class="proj-v-btn btn-website" title="Visit Official Website">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                  </svg>
-                  <span>Website</span>
-                </a>
-              ` : ''}
-
-              <a href="projects/${pr.id}/" class="proj-v-btn btn-details" title="View Full Project Case Study">
-                <span>Details →</span>
+              <a href="projects/${pr.id}/" class="proj-v-btn btn-details">
+                <span>Case Study →</span>
               </a>
             </div>
 
@@ -989,78 +900,62 @@ function renderProjects() {
     </div>
   `;
 
-  // Attach 3D Cursor Tilt
   init3dCardTilt();
 }
 
-/* ── RESEARCH ───────────────────────────────────────────────── */
+/* ── RESEARCH (Compact Bibliography List) ─────────────────────── */
 function renderResearch() {
   const el = $('#research-content');
   if (!el) return;
 
-  const statusColor = { active: '#16a34a', completed: '#6366f1' };
-
   el.innerHTML = `
-    <div class="research-grid">
+    <div class="academic-bib-list">
       ${DATA.research.map((r, i) => `
-        <div class="research-card animate" style="transition-delay:${i * 0.1}s">
-          <div class="research-num" style="color:${statusColor[r.status] || '#ABABB2'}">
-            <span class="research-sdot" style="background:${statusColor[r.status] || '#ABABB2'}"></span>
-            ${r.number}
+        <div class="bib-entry-row animate" style="transition-delay:${i * 0.08}s">
+          <div class="bib-index font-mono">[0${i + 1}] · 2026</div>
+          <div class="bib-main">
+            <div class="bib-title">${r.title}</div>
+            <div class="bib-meta font-mono">
+              <span class="bib-venue-chip">${r.category}</span>
+              <span>Dataset: ${r.dataset}</span>
+              <span class="bib-status-pill ${r.status === 'completed' ? 'published' : 'preprint'}">${r.status.toUpperCase()}</span>
+            </div>
+            <div class="bib-abstract">${r.approach}</div>
           </div>
-          <div class="research-title">${r.title}</div>
-          <div class="research-body">${r.approach.slice(0, 130)}…</div>
-          <div class="research-tags">
-            <span class="research-tag">${r.category}</span>
-            <span class="research-tag">${r.dataset}</span>
-            <span class="research-tag">${r.status}</span>
+          <div class="bib-actions">
+            <a href="images/TahaZeeshan_CV.pdf" target="_blank" class="bib-pdf-btn font-mono">📄 PDF Paper ↗</a>
           </div>
-        </div>
-      `).join('')}
-    </div>
-
-    <div class="questions-box animate">
-      <div class="questions-lbl">Questions I'm exploring</div>
-      ${[
-        'How can unsupervised anomaly detection models generalize across manufacturing conditions without domain-specific retraining?',
-        'What is the practical accuracy-latency frontier for quantized vision models on Jetson hardware at the edge?',
-        'How does visual SLAM degrade in featureless environments, and what fusion strategies maintain robust localization?',
-      ].map((q, i) => `
-        <div class="question-row">
-          <span class="question-n">0${i + 1}</span>
-          <p class="question-t">${q}</p>
         </div>
       `).join('')}
     </div>
   `;
 }
 
-/* ── EDUCATION (With Curved Silhouette Cards) ─────────────────────── */
+/* ── EDUCATION (Clean Timeline Rail) ───────────────────────────── */
 function renderEducation() {
   const el = $('#education-content');
   if (!el) return;
 
-  const badges = ['edu-badge-blue', 'edu-badge-blue', 'edu-badge-gold'];
-  const curveClasses = ['edu-card-curved-1', 'edu-card-curved-2', 'edu-card-curved-3'];
-
   el.innerHTML = `
-    <div class="education-grid">
+    <div class="vertical-timeline-rail">
       ${DATA.education.map((e, i) => `
-        <div class="edu-card ${curveClasses[i] || ''} animate" style="transition-delay:${i * 0.1}s">
-          <div class="edu-institution">${e.institution}</div>
-          <div class="edu-degree">${e.degree}</div>
-          <div class="edu-meta">
-            <div class="edu-meta-row">📍 ${e.location}</div>
-            <div class="edu-meta-row">📅 ${e.dates}</div>
+        <div class="timeline-entry animate" style="transition-delay:${i * 0.08}s">
+          <div class="timeline-node-dot edu-node">🎓</div>
+          <div class="timeline-entry-hdr">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <span class="timeline-dates-tag font-mono">${e.dates}</span>
+              <span class="timeline-location-tag">📍 ${e.location}</span>
+            </div>
+            <h3 class="timeline-role-title">${e.degree} <span class="timeline-company-name">@ ${e.institution}</span></h3>
           </div>
-          ${e.note ? `<span class="edu-badge ${badges[i]}">${e.note}</span>` : ''}
+          ${e.note ? `<p class="timeline-desc-txt" style="margin-top:8px;">${e.note}</p>` : ''}
         </div>
       `).join('')}
     </div>
   `;
 }
 
-/* ── ACHIEVEMENTS & HONOURS (With Image Cards & Full Details) ── */
+/* ── ACHIEVEMENTS & HONOURS (Stat Spotlights + Dense List) ────── */
 function renderAchievements() {
   const el = $('#achievements-content');
   if (!el) return;
@@ -1069,7 +964,7 @@ function renderAchievements() {
 
   el.innerHTML = `
     <!-- NUMERICAL SUMMARY METRICS -->
-    <div class="achievements-numbers" style="margin-bottom: 36px;">
+    <div class="achievements-numbers">
       ${[
         { n: '3rd',   l: 'Place · Youth Tech Innovators 2025' },
         { n: '30k ₺', l: 'Prize Won at National Competition' },
@@ -1083,65 +978,20 @@ function renderAchievements() {
       `).join('')}
     </div>
 
-    <!-- HONOURS & AWARDS IMAGE CARDS GRID -->
-    <div class="honours-cards-grid">
-      ${items.map((ach, idx) => {
-        const itemLink = ach.link || ach.linkedinPost || 'https://www.linkedin.com/in/tahazeeshan12';
-        const isInstagram = ach.platform === 'instagram' || itemLink.includes('instagram.com');
-        const isWebsite = ach.platform === 'website' || (!itemLink.includes('linkedin.com') && !itemLink.includes('instagram.com'));
-        
-        let iconSvg = `<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.77a1.63 1.63 0 1 0 0 3.26 1.63 1.63 0 0 0 0-3.26z"/></svg>`;
-        let labelTxt = 'LinkedIn Post ↗';
-        let btnTxt = 'View LinkedIn 🔗';
-
-        if (isInstagram) {
-          iconSvg = `<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`;
-          labelTxt = 'Instagram Post ↗';
-          btnTxt = 'View Instagram 🔗';
-        } else if (isWebsite) {
-          iconSvg = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
-          labelTxt = 'Official Website ↗';
-          btnTxt = 'Visit Website 🌐';
-        }
-
-        return `
-          <div class="honour-img-card tilt-card animate" style="transition-delay:${idx * 0.1}s">
-            <a href="${itemLink}" target="_blank" rel="noopener" class="honour-card-media" title="Open Link">
-              <img src="${ach.image}" alt="${ach.title}" class="honour-card-img"
-                   onerror="this.src='assets/images/portrait_headshot.png'">
-              <div class="honour-media-scrim"></div>
-              <span class="honour-year-pill font-mono">${ach.year}</span>
-              <span class="honour-award-pill font-mono">${ach.award}</span>
-
-              <span class="honour-img-linkedin-badge font-mono" style="${isInstagram ? 'background:linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);' : isWebsite ? 'background:#059669;' : ''}">
-                ${iconSvg}
-                <span>${labelTxt}</span>
-              </span>
-            </a>
-
-            <div class="honour-card-info">
-              <span class="honour-org-lbl font-mono">${ach.organization}</span>
-              <h3 class="honour-card-title">${ach.title}</h3>
-              <p class="honour-card-desc">${ach.description}</p>
-              
-              <div class="honour-tags-row">
-                ${ach.tags.map(t => `<span class="honour-tag-chip">${t}</span>`).join('')}
-              </div>
-
-              <div class="honour-card-footer">
-                <a href="${itemLink}" target="_blank" rel="noopener" class="honour-linkedin-btn font-mono" style="${isInstagram ? 'border-color:#e6683c; color:#dc2743;' : isWebsite ? 'border-color:#059669; color:#059669;' : ''}">
-                  ${iconSvg}
-                  <span>${btnTxt}</span>
-                </a>
-              </div>
-            </div>
+    <!-- DENSE AWARD HONOURS LIST -->
+    <div class="dense-honours-list">
+      ${items.map((ach, idx) => `
+        <div class="dense-honour-row animate" style="transition-delay:${idx * 0.06}s">
+          <div class="dense-honour-year font-mono">${ach.year}</div>
+          <div class="dense-honour-main">
+            <div class="dense-honour-title">🏆 ${ach.title} <span class="dense-honour-award font-mono">(${ach.award})</span></div>
+            <div class="dense-honour-org">${ach.organization} — ${ach.description}</div>
           </div>
-        `;
-      }).join('')}
+          <a href="${ach.link || ach.linkedinPost || '#'}" target="_blank" rel="noopener" class="dense-honour-link font-mono">Link ↗</a>
+        </div>
+      `).join('')}
     </div>
   `;
-
-  init3dCardTilt();
 }
 
 /* ── PURE FLOATING 3D TECH FOOTBALL SPHERE ─────────────────────── */
