@@ -193,14 +193,6 @@ function renderHero() {
           </div>
           <div class="location-badge">📍 ${p.location}</div>
         </div>
-        <div class="hero-actions animate ad5">
-          <a class="hero-cv-btn" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf">
-            <span>Download CV</span>
-          </a>
-          <a class="hero-contact-btn" href="#contact">
-            <span>Get in Touch</span>
-          </a>
-        </div>
       </div>
 
       <div class="hero-character-col animate ad2">
@@ -212,6 +204,15 @@ function renderHero() {
             <canvas id="hero-chroma-canvas" class="chroma-canvas"></canvas>
           </div>
         </div>
+      </div>
+
+      <div class="hero-actions animate ad5">
+        <a class="hero-cv-btn" href="images/TahaZeeshan_CV.pdf" target="_blank" rel="noopener" download="TahaZeeshan_CV.pdf">
+          <span>Download CV</span>
+        </a>
+        <a class="hero-contact-btn" href="#contact">
+          <span>Get in Touch</span>
+        </a>
       </div>
     </div>
   `;

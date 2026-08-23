@@ -3899,7 +3899,7 @@ html[data-theme="dark"] .mobile-nav-content {
   /* PROMINENT 3D CHARACTER ON MOBILE */
   .hero-character-col {
     width: 100% !important;
-    margin-top: 12px !important;
+    margin: 16px 0 !important;
     justify-content: center !important;
   }
   .interactive-chroma-card {
@@ -3908,9 +3908,9 @@ html[data-theme="dark"] .mobile-nav-content {
   }
   .chroma-standing-frame {
     width: 100% !important;
-    max-width: 380px !important;
-    height: 460px !important;
-    max-height: 520px !important;
+    max-width: 440px !important;
+    height: min(540px, 65vh) !important;
+    max-height: 600px !important;
     aspect-ratio: 850 / 1120 !important;
     margin: 0 auto !important;
   }
