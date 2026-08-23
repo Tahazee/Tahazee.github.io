@@ -281,8 +281,21 @@ img { display: block; max-width: 100%; }
 :root[data-theme="dark"] .bottom-nav-item .moon-icon { display: none; }
 
 /* ── LAYOUT ──────────────────────────────────────────────────── */
-.section { padding: var(--section-py) 24px; }
-.container { max-width: var(--max-w); margin: 0 auto; }
+.section {
+  padding: var(--section-py) clamp(24px, 5vw, 48px);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
 
 /* ── PURE PURPLE GRADIENT & ONE-DIRECTION NARROW GLIDER ───────── */
 .section-label {
@@ -4668,19 +4681,29 @@ html, body {
   position: absolute;
   width: 330px;
   max-width: 86vw;
-  background: var(--card-bg);
+  background: #111215 !important;
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 22px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   user-select: none;
   touch-action: pan-y;
+  overflow: hidden;
+}
+:root[data-theme="light"] .coverflow-card {
+  background: #ffffff !important;
 }
 .coverflow-card.active {
   border-color: var(--accent);
   box-shadow: 0 20px 50px rgba(124, 58, 237, 0.38), 0 0 30px rgba(124, 58, 237, 0.25);
+}
+
+/* ── SUPPRESS INNER NESTED SECTION SCROLLBARS ───────────────── */
+.projects-grid-vibrant, .projects-bento-grid, .academic-bib-list, .dense-cert-table-wrap, .dense-honours-list {
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
 }
 .coverflow-nav-btn {
   position: absolute;

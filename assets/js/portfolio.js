@@ -943,37 +943,33 @@ function updateCoverflow() {
     if (diff === 0) {
       card.style.transform = isSmallScreen 
         ? 'translate3d(0, 0, 0) scale(1)' 
-        : 'perspective(1000px) translate3d(0, 0, 60px) rotateY(0deg) scale(1.06)';
+        : 'perspective(1200px) translate3d(0, 0, 80px) rotateY(0deg) scale(1.04)';
       card.style.opacity = '1';
       card.style.zIndex = '10';
       card.style.pointerEvents = 'auto';
       card.classList.add('active');
     } else if (diff === -1) {
       card.style.transform = isSmallScreen
-        ? 'translate3d(-100px, 0, 0) scale(0.85)'
-        : 'perspective(1000px) translate3d(-150px, 0, -30px) rotateY(16deg) scale(0.86)';
-      card.style.opacity = '0.65';
+        ? 'translate3d(-160px, 0, -40px) scale(0.78)'
+        : 'perspective(1200px) translate3d(-240px, 0, -50px) rotateY(22deg) scale(0.82)';
+      card.style.opacity = isSmallScreen ? '0.35' : '0.75';
       card.style.zIndex = '5';
       card.style.pointerEvents = 'auto';
       card.classList.remove('active');
     } else if (diff === 1) {
       card.style.transform = isSmallScreen
-        ? 'translate3d(100px, 0, 0) scale(0.85)'
-        : 'perspective(1000px) translate3d(150px, 0, -30px) rotateY(-16deg) scale(0.86)';
-      card.style.opacity = '0.65';
+        ? 'translate3d(160px, 0, -40px) scale(0.78)'
+        : 'perspective(1200px) translate3d(240px, 0, -50px) rotateY(-22deg) scale(0.82)';
+      card.style.opacity = isSmallScreen ? '0.35' : '0.75';
       card.style.zIndex = '5';
       card.style.pointerEvents = 'auto';
       card.classList.remove('active');
-    } else if (diff < -1) {
-      card.style.transform = 'perspective(1000px) translate3d(-260px, 0, -80px) rotateY(30deg) scale(0.7)';
-      card.style.opacity = '0.2';
-      card.style.zIndex = '1';
-      card.style.pointerEvents = 'none';
-      card.classList.remove('active');
     } else {
-      card.style.transform = 'perspective(1000px) translate3d(260px, 0, -80px) rotateY(-30deg) scale(0.7)';
-      card.style.opacity = '0.2';
-      card.style.zIndex = '1';
+      card.style.transform = diff < 0
+        ? 'perspective(1200px) translate3d(-380px, 0, -120px) rotateY(35deg) scale(0.65)'
+        : 'perspective(1200px) translate3d(380px, 0, -120px) rotateY(-35deg) scale(0.65)';
+      card.style.opacity = '0';
+      card.style.zIndex = '0';
       card.style.pointerEvents = 'none';
       card.classList.remove('active');
     }
