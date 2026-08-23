@@ -5041,10 +5041,30 @@ html, body {
   }
 }
 
-/* ── REMOVE INDIVIDUAL VERTICAL SCROLLS FROM ALL SECTIONS ─────── */
-section, .section, #app-viewport, main,
+/* ── REMOVE ALL SCROLLBARS FROM ALL SECTIONS FROM ABOUT TO END ──── */
+html, body, *, *::before, *::after {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+::-webkit-scrollbar,
+*::-webkit-scrollbar,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+section, .section, #about, #tech-football, #experience, #projects, 
+#research, #education, #achievements, #certifications, #writing,
+#app-viewport, main, div, article, aside, nav,
 .vertical-timeline-rail, .academic-bib-list, .dense-cert-table-wrap, 
-.dense-honours-list, .editorial-toc-list, .projects-grid-vibrant, .projects-bento-grid {
+.dense-honours-list, .editorial-toc-list, .projects-grid-vibrant, .projects-bento-grid,
+.project-showcase-container, .showcase-panels-track, .project-panel, .panel-text-side {
   overflow-y: visible !important;
   max-height: none !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
