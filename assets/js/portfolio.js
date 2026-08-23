@@ -836,11 +836,11 @@ function renderProjects() {
   if (!el) return;
 
   const projectImages = {
-    'ros2-nav2':         'images/ros2 project.png',
-    'iglasses':          'images/iglasses_project.png',
-    'ulurover':          'images/ulurover_project.png',
-    'tarimtek':          'images/tarimtek_project.png',
-    'anomaly-detection': 'images/datascience_project.png',
+    'ros2-nav2':         'images/ros2_project_hd.png',
+    'iglasses':          'images/iglasses_project_hd.png',
+    'ulurover':          'images/ulurover_project_hd.png',
+    'tarimtek':          'images/tarimtek_project_hd.png',
+    'anomaly-detection': 'images/datascience_project_hd.png',
   };
 
   const leadMetric = {
@@ -883,7 +883,7 @@ function renderProjects() {
               <!-- MEDIA SIDE (FULL-BLEED IMAGE WITH GRADIENT SCANLINE CUT) -->
               <div class="panel-media-side">
                 <div class="panel-image-wrapper">
-                  <img src="${pr.image || projectImages[pr.id] || 'images/ros2 project.png'}" alt="${pr.title}" class="panel-img" loading="${i === 0 ? 'eager' : 'lazy'}" onerror="this.src='images/ros2 project.png'">
+                  <img src="${pr.image || projectImages[pr.id] || 'images/ros2_project_hd.png'}" alt="${pr.title}" class="panel-img" loading="${i === 0 ? 'eager' : 'lazy'}" onerror="this.src='images/ros2_project_hd.png'">
                   <div class="panel-img-scrim"></div>
                   ${metric ? `
                     <div class="panel-metric-badge font-mono">
