@@ -1176,7 +1176,6 @@ ul { list-style: none; }
   #dashboard {
     grid-template-columns: var(--sidebar-w) 1fr;
   }
-  #projects-rail { display: none; }
   .panels-row-3 { grid-template-columns: 1fr 1fr; }
 }
 
@@ -1405,9 +1404,13 @@ body::-webkit-scrollbar {
     gap: 14px !important;
   }
 
-  #profile-sidebar, #main-content, #projects-rail, 
+  #profile-sidebar, #main-panels, #main-content, #projects-rail, 
+  .panels-row, .panels-row-3, .panels-row-2,
   .panel, .profile-card, .sidebar-section, .stat-card, 
   .activity-item, .proj-rail-card, .heatmap-panel, .skills-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
     width: 100% !important;
     max-width: 100% !important;
     position: static !important;
