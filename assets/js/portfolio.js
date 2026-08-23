@@ -828,178 +828,190 @@ window.closeContributionsModal = function(e) {
   }
 };
 
-/* ── 04 PROJECTS (3D Curvy Coverflow Carousel) ─────────────────── */
-let currentProjIndex = 0;
+/* ── 04 FEATURED PROJECTS (Full-Bleed Scroll-Panel Project Showcase) ── */
+let currentShowcaseIndex = 0;
 
 function renderProjects() {
   const el = $('#projects-content');
   if (!el) return;
 
-  const statusMap = {
-    completed: 'proj-badge-completed',
-    active:    'proj-badge-active',
-    paused:    'proj-badge-paused',
+  const projectImages = {
+    'ros2-nav2':         'images/ros2 project.png',
+    'iglasses':          'images/iglasses_3rdplace_ytb.jpg',
+    'ulurover':          'images/sponsorship_250k.jpg',
+    'tarimtek':          'images/proje sergisi.jpg',
+    'anomaly-detection': 'images/bvcscert-logo.jpg',
   };
 
   const leadMetric = {
-    'iglasses':          { val: '97.3%', lbl: 'Recall' },
-    'ulurover':          { val: '<2.5%', lbl: 'Drift' },
+    'ros2-nav2':         { val: '1.5 m/s', lbl: 'Autonomous Speed' },
+    'iglasses':          { val: '97.3%', lbl: 'Detection Recall' },
+    'ulurover':          { val: '<2.5%', lbl: 'SLAM Drift' },
     'tarimtek':          { val: '91.4%', lbl: 'mAP@0.5' },
-    'anomaly-detection': { val: '0.923', lbl: 'AUROC' },
-    'ros2-nav2':         { val: '1.5 m/s', lbl: 'Speed' },
+    'anomaly-detection': { val: '0.923', lbl: 'AUROC Benchmark' },
   };
 
-  el.innerHTML = `
-    <div class="coverflow-stage">
-      <button class="coverflow-nav-btn prev-btn" aria-label="Previous Project" onclick="shiftProjects(-1)">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
+  const projects = DATA.projects;
 
-      <div class="coverflow-track" id="coverflow-track">
-        ${DATA.projects.map((pr, i) => {
+  el.innerHTML = `
+    <div class="project-showcase-container" id="project-showcase-container">
+      
+      <!-- FLOATING SHOWCASE CONTROLS & PROGRESS COUNTER -->
+      <div class="showcase-controls">
+        <span class="showcase-counter font-mono" id="showcase-counter">01 / 0${projects.length}</span>
+        <div class="showcase-arrow-btns">
+          <button class="showcase-arrow-btn" aria-label="Previous Project" onclick="shiftShowcasePanel(-1)">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="showcase-arrow-btn" aria-label="Next Project" onclick="shiftShowcasePanel(1)">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- FULL-BLEED SCROLL PANELS TRACK -->
+      <div class="showcase-panels-track" id="showcase-panels-track">
+        ${projects.map((pr, i) => {
           const metric = leadMetric[pr.id];
-          const badgeCls = statusMap[pr.status] || 'proj-badge-paused';
+          const imgSrc = projectImages[pr.id] || 'images/ros2 project.png';
           const githubUrl = pr.github || 'https://github.com/Tahazee';
+          const isEven = i % 2 !== 0;
 
           return `
-            <div class="coverflow-card ${i === 0 ? 'active' : ''}" data-index="${i}" onclick="selectProjectCard(${i})">
-              <div class="proj-v-shine"></div>
-
-              <div class="proj-v-header">
-                <span class="proj-v-cat font-mono">${pr.category}</span>
-                <span class="proj-v-badge ${badgeCls}">${pr.status}</span>
+            <div class="project-panel ${isEven ? 'panel-even' : 'panel-odd'} ${i === 0 ? 'active' : ''}" data-panel-index="${i}">
+              
+              <!-- MEDIA SIDE (FULL-BLEED IMAGE WITH GRADIENT SCANLINE CUT) -->
+              <div class="panel-media-side">
+                <div class="panel-image-wrapper">
+                  <img src="${imgSrc}" alt="${pr.title}" class="panel-img" loading="${i === 0 ? 'eager' : 'lazy'}" onerror="this.src='images/ros2 project.png'">
+                  <div class="panel-img-scrim"></div>
+                  ${metric ? `
+                    <div class="panel-metric-badge font-mono">
+                      <span class="metric-val">${metric.val}</span>
+                      <span class="metric-lbl">${metric.lbl}</span>
+                    </div>` : ''}
+                </div>
               </div>
 
-              <div class="proj-v-body">
-                <h3 class="proj-v-title">${pr.title}</h3>
+              <!-- TEXT SIDE (PRECISION TYPOGRAPHY & TAGS) -->
+              <div class="panel-text-side">
+                <div class="panel-eyebrow font-mono">
+                  <span class="panel-terminal-icon">[ ⚡ ]</span>
+                  <span>PROJECT — 0${i + 1}</span>
+                  <span class="panel-category-chip">${pr.category}</span>
+                </div>
 
-                ${metric ? `
-                  <div class="proj-v-metric">
-                    <span class="proj-v-metric-val">${metric.val}</span>
-                    <span class="proj-v-metric-lbl">${metric.lbl}</span>
-                  </div>` : ''}
+                <h3 class="panel-headline">${pr.title}</h3>
 
-                <p class="proj-v-desc">${pr.description}</p>
+                <p class="panel-body-txt">${pr.description}</p>
+
+                <div class="panel-tech-chips">
+                  ${pr.technologies.slice(0, 5).map(t => `
+                    <span class="panel-chip font-mono">[ ${t} ]</span>
+                  `).join('')}
+                </div>
+
+                <div class="panel-actions-row">
+                  <a href="projects/${pr.id}/" class="panel-cta-btn font-mono">
+                    <span>Read Case Study</span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                  <a href="${githubUrl}" target="_blank" rel="noopener" class="panel-github-link font-mono">
+                    <span>GitHub ↗</span>
+                  </a>
+                </div>
               </div>
 
-              <div class="proj-v-tags-row">
-                ${pr.technologies.slice(0, 4).map(t => `<span class="proj-v-chip">${t}</span>`).join('')}
-              </div>
-
-              <div class="proj-v-actions">
-                <a href="${githubUrl}" target="_blank" rel="noopener" class="proj-v-btn btn-github">
-                  <span>GitHub ↗</span>
-                </a>
-                <a href="projects/${pr.id}/" class="proj-v-btn btn-details">
-                  <span>Case Study →</span>
-                </a>
-              </div>
             </div>
           `;
         }).join('')}
       </div>
 
-      <button class="coverflow-nav-btn next-btn" aria-label="Next Project" onclick="shiftProjects(1)">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
-      </button>
-    </div>
+      <!-- PAGINATION DOTS -->
+      <div class="showcase-dots font-mono">
+        ${projects.map((_, i) => `
+          <button class="showcase-dot ${i === 0 ? 'active' : ''}" aria-label="Go to project ${i + 1}" onclick="selectShowcasePanel(${i})"></button>
+        `).join('')}
+      </div>
 
-    <!-- CAROUSEL DOTS INDICATOR -->
-    <div class="coverflow-dots">
-      ${DATA.projects.map((_, i) => `
-        <span class="coverflow-dot ${i === 0 ? 'active' : ''}" onclick="selectProjectCard(${i})"></span>
-      `).join('')}
     </div>
   `;
 
-  updateCoverflow();
-  initCoverflowTouch();
+  updateShowcaseDisplay();
+  initShowcaseInteractions();
 }
 
-window.selectProjectCard = function(index) {
+window.selectShowcasePanel = function(index) {
   if (index < 0 || index >= DATA.projects.length) return;
-  currentProjIndex = index;
-  updateCoverflow();
+  currentShowcaseIndex = index;
+  updateShowcaseDisplay();
 };
 
-window.shiftProjects = function(dir) {
-  const newIdx = currentProjIndex + dir;
+window.shiftShowcasePanel = function(dir) {
+  const newIdx = currentShowcaseIndex + dir;
   if (newIdx >= 0 && newIdx < DATA.projects.length) {
-    currentProjIndex = newIdx;
-    updateCoverflow();
+    currentShowcaseIndex = newIdx;
+    updateShowcaseDisplay();
   }
 };
 
-function updateCoverflow() {
-  const cards = $$('.coverflow-card');
-  const dots = $$('.coverflow-dot');
-  if (!cards.length) return;
+function updateShowcaseDisplay() {
+  const panels = $$('.project-panel');
+  const dots = $$('.showcase-dot');
+  const counter = $('#showcase-counter');
+  if (!panels.length) return;
 
-  const isSmallScreen = window.innerWidth <= 640;
+  if (counter) {
+    counter.textContent = `0${currentShowcaseIndex + 1} / 0${DATA.projects.length}`;
+  }
 
-  cards.forEach((card, i) => {
-    const diff = i - currentProjIndex;
-
-    if (diff === 0) {
-      card.style.transform = isSmallScreen 
-        ? 'translate3d(0, 0, 0) scale(1)' 
-        : 'perspective(1200px) translate3d(0, 0, 80px) rotateY(0deg) scale(1.04)';
-      card.style.opacity = '1';
-      card.style.zIndex = '10';
-      card.style.pointerEvents = 'auto';
-      card.classList.add('active');
-    } else if (diff === -1) {
-      card.style.transform = isSmallScreen
-        ? 'translate3d(-160px, 0, -40px) scale(0.78)'
-        : 'perspective(1200px) translate3d(-240px, 0, -50px) rotateY(22deg) scale(0.82)';
-      card.style.opacity = isSmallScreen ? '0.35' : '0.75';
-      card.style.zIndex = '5';
-      card.style.pointerEvents = 'auto';
-      card.classList.remove('active');
-    } else if (diff === 1) {
-      card.style.transform = isSmallScreen
-        ? 'translate3d(160px, 0, -40px) scale(0.78)'
-        : 'perspective(1200px) translate3d(240px, 0, -50px) rotateY(-22deg) scale(0.82)';
-      card.style.opacity = isSmallScreen ? '0.35' : '0.75';
-      card.style.zIndex = '5';
-      card.style.pointerEvents = 'auto';
-      card.classList.remove('active');
-    } else {
-      card.style.transform = diff < 0
-        ? 'perspective(1200px) translate3d(-380px, 0, -120px) rotateY(35deg) scale(0.65)'
-        : 'perspective(1200px) translate3d(380px, 0, -120px) rotateY(-35deg) scale(0.65)';
-      card.style.opacity = '0';
-      card.style.zIndex = '0';
-      card.style.pointerEvents = 'none';
-      card.classList.remove('active');
-    }
+  panels.forEach((panel, i) => {
+    const isCurrent = i === currentShowcaseIndex;
+    panel.classList.toggle('active', isCurrent);
   });
 
   dots.forEach((dot, i) => {
-    dot.classList.toggle('active', i === currentProjIndex);
+    dot.classList.toggle('active', i === currentShowcaseIndex);
   });
+
+  const track = $('#showcase-panels-track');
+  if (track) {
+    const isMobile = window.innerWidth <= 820;
+    if (isMobile) {
+      track.style.transform = `translateX(-${currentShowcaseIndex * 100}%)`;
+    } else {
+      track.style.transform = `translateY(-${currentShowcaseIndex * 100}%)`;
+    }
+  }
 }
 
-function initCoverflowTouch() {
-  const track = $('#coverflow-track');
-  if (!track) return;
+function initShowcaseInteractions() {
+  const container = $('#project-showcase-container');
+  if (!container) return;
 
-  let startX = 0;
-  let dist = 0;
+  let startX = 0, startY = 0, distX = 0, distY = 0;
 
-  track.addEventListener('touchstart', (e) => {
+  container.addEventListener('touchstart', (e) => {
     startX = e.touches[0].clientX;
-    dist = 0;
+    startY = e.touches[0].clientY;
+    distX = 0;
+    distY = 0;
   }, { passive: true });
 
-  track.addEventListener('touchmove', (e) => {
-    dist = e.touches[0].clientX - startX;
+  container.addEventListener('touchmove', (e) => {
+    distX = e.touches[0].clientX - startX;
+    distY = e.touches[0].clientY - startY;
   }, { passive: true });
 
-  track.addEventListener('touchend', () => {
-    if (dist < -40) shiftProjects(1);
-    else if (dist > 40) shiftProjects(-1);
+  container.addEventListener('touchend', () => {
+    const isMobile = window.innerWidth <= 820;
+    if (isMobile && Math.abs(distX) > 40) {
+      if (distX < 0) shiftShowcasePanel(1);
+      else shiftShowcasePanel(-1);
+    }
   });
+
+  window.addEventListener('resize', updateShowcaseDisplay, { passive: true });
 }
 
 /* ── RESEARCH (Compact Bibliography List) ─────────────────────── */
